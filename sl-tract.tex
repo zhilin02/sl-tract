@@ -487,9 +487,11 @@ The satisfiability of SLID[$\lseg$] formulae can be decided in polynomial time.
 
 \subsection{SLID[$\dllseg$]}
 
+Let $\varphi = \Pi \wedge \Sigma$ be an SLID[$\dllseg$] formula. Our goal is to show that the satisfiability of $\varphi$ can be decided in polynomial time. Without loss of generality, we assume that $\Pi$ in $\varphi$ is \emph{saturated} in the following sense: for every pair of distinct points-to atoms of $\Sigma$ rooted at $E_1,E_2$ respectively, it holds that $E_1 \neq E_2$ is a conjunct in $\Pi$.
+
 Before presenting the decision procedure for satisfiability, let us get some idea of the problem by some examples.
 
-\begin{example}
+\begin{example}\label{exmp-dllseg-sat}
 Consider the following formulae.
 \begin{itemize}
 \item The formula $\varphi_1:= E_1 \neq E_2 \wedge \dllseg(E_1,F_1; E_2, F_2) \sep F_2 \mapsto ((\fnext,E_3),(\fprev,E_4))$ is unsatisfiable: $E_1 \neq E_2$ implies that a nonempty subheap $h$ should be assigned to $\dllseg(E_1, F_1; E_2, F_2)$. From this, we know that $F_2$ is already allocated in $h$, which contradicts the existence of a points-to atom out of $F_2$.
@@ -500,7 +502,6 @@ Consider the following formulae.
 \end{itemize}
 \end{example}
 
-Let $\varphi = \Pi \wedge \Sigma$ be an SLID[$\dllseg$] formula. Our goal is to show that the satisfiability of $\varphi$ can be decided in polynomial time.
 
 Let $\varphi = \Pi \wedge \Sigma$ be an SLID$[\dllseg]$ formula where $\Sigma \equiv a_1 \sep \dots \sep a_n$. We use $\sim_\Pi$ to denote the equivalence relation defined as follows: For $E,F \in \lvars(\varphi)$, $E \sim_\Pi F$ iff $\Pi \models E = F$. Note that the equivalence relation $\sim_\Pi$ can be computed from $\Pi$ in polynomial time. Moreover, we use $[E]_\Pi$ to denote the equivalence class of $\sim_\Pi$ containing $E$. We also abbreviate $[E]_\Pi$ as $[E]$ if $\Pi$ is clear from the context.
 
@@ -532,6 +533,9 @@ For any given SLID$[\dllseg]$ formula $\varphi$, we define a graph
 Similarly to SLID[$\lseg$] graphs, we can define SLID[$\dllseg$] graphs.
 
 We present the following two-step procedure to simplify the SLID[$\dllseg$]-graphs.
+
+Before presenting the algorithm, we introduce some notations. When we say that ``merge two nodes $[E]$ and $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. We say that ``contract an arc $e$ from $[E]$ to $[F]$ and labeled by $\dllseg(P;L)$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$ in $\Gg$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs related to them) are removed, finally, $[P]$ and $[L]$ are merged.  
+
 
 \smallskip
 \noindent{\bf Step I}. Let $\Gg':=\Gg$. Repeat the following procedure until no more reductions can be done.
@@ -566,6 +570,11 @@ The collection of simple cycles in $\Ss$ is organised into a tree. More precisel
 
 Before presenting the second step, we introduce some notations.
 
+\begin{definition}[{Arcs reachable from $[E]$ through $e$}]
+Let $\Gg$ be an SLID[$\dllseg$] graph, $[E]$ be a node in $\Gg$, and $e$ be an arc out of $[E]$. Then an arc $e' \in \Ee([E])$ is said to be reachable from $[E]$ through $e$ if every path from $[E]$ to $e'$ goes through $e$. Let $\Ee_{e}([E])$ denote the set of arcs reachable from $[E]$ through $e$, with $e$ itself included. 
+\end{definition}
+
+
 \begin{definition}[Potentially reachable]
 Let $\Gg$ be an SLID[$\dllseg$] graph. For a node $[E]$, the set of nodes that are \emph{potentially reachable} from $[E]$ in $\Gg$, denoted by $Ptn_{[E]}$, is the minimum set of nodes satisfying the following constraints,
 \begin{itemize}
@@ -580,13 +589,14 @@ Then we say that a node $[F]$ is \emph{potentially reachable} from $[E]$ if $[F]
 For each node $[E]$ in an SLID[$\dllseg$] graph $\Gg$, let $\Ee_{ptn}([E])$ denote the set of directed arcs that are potentially reachable from $[E]$. Moreover, let $[E]$ be a node and $e$ be a directed arc out of $[E]$ in $\Gg$, we use $\Ee_{ptn, - e}([E])$  to denote the set of directed arcs that are potentially reachable in $\Gg-e$.
 
 \begin{example}
-example here for the concept of potentially reachable.
+Consider the formula $\varphi_3 := E_1 \neq E_5 \wedge F_4 \neq F_5 \wedge \dllseg(E_1, F_1; E_2, F_2) \sep \dllseg(E_2, E_1; E_3, F_3) \sep \dllseg(F_3, F_4; E_4, F_5) \sep \dllseg(E_1, F_6; E_5, F_7)$ in Example~\ref{exmp-dllseg-sat}. In $\Gg_\varphi$, all the directed arcs are potentially reachable from $[E_1]$.
 \end{example}
 
-\begin{definition}[Persistent set of arcs]
-Let $\Gg$ be an SLID[$\dllseg$]-graph and $\varphi_\Gg = \Pi \wedge \Sigma$. Then a set of arcs in $\Gg$, say $\Ee$, is said to be \emph{persistent} if either $\Ee$ contains a field-labeled arc, or otherwise $\bigwedge \limits_{e \in \Ee} \phi_e \wedge \Pi$ is unsatisfiable, where $\phi_e := E = F \wedge P = L $ for an arc $e$ from $[E]$ to $[F]$ labeled by $\dllseg(P; L)$.
-\end{definition}
 
+
+\begin{definition}[Persistent set of arcs]
+Let $\Gg$ be an SLID[$\dllseg$] graph and $\varphi_\Gg = \Pi \wedge \Sigma$. Then a set of arcs in $\Gg$, say $\Ee$, is said to be \emph{persistent} if either $\Ee$ contains a field-labeled arc, or otherwise $\bigwedge \limits_{e \in \Ee} \phi_e \wedge \Pi$ is unsatisfiable, where $\phi_e := E = F \wedge P = L $ for an arc $e$ from $[E]$ to $[F]$ labeled by $\dllseg(P; L)$.
+\end{definition}
 
 \smallskip
 
@@ -599,11 +609,16 @@ Let $\Gg$ be an SLID[$\dllseg$]-graph and $\varphi_\Gg = \Pi \wedge \Sigma$. The
 \item there are two field-labeled arcs out of $[E]$.
 \end{itemize}
 %
-\item If there are a node $[E']$ and a pair of variables $E, F$ such that $[E] \neq [F]$, there are at least two arcs out of $[E']$, and for each arc $e$ out of $[E']$, it holds that $\big [\bigwedge \limits_{e' \in \Ee([E']) \setminus \Ee_{-e}([E'])} \phi_{e'} \big] \models E=F$, then merge $[E]$ and $[F]$.
+\item If there are a node $[E']$ and two distinct variables $E$ and $F$ such that $[E] \neq [F]$,  there are at least two arcs out of $[E']$, and for each arc $e$ out of $[E']$, it holds that $\big [\bigwedge \limits_{e' \in \Ee_e([E'])} \phi_{e'} \big] \models E=F$, then merge $[E]$ and $[F]$. 
+Moreover, if after the merging, there are two node-disjoint paths between two nodes,  then we can apply Step I again so that the resulting graph enjoys the properties in Proposition~\ref{prop-unique-path}.
 %
-\item If there are two distinct nodes $[E]$ and $[F]$ and two node-disjoint simple paths from $[E]$ to $[F]$ (except the endpoints $[E],[F]$), then merge $[E]$ and $[F]$.
+%\item If there are two distinct nodes $[E]$ and $[F]$ and two node-disjoint simple paths from $[E]$ to $[F]$ (except the endpoints $[E],[F]$), then merge $[E]$ and $[F]$.
+\item If there is an arc $e$ from $[E]$ to $[F]$ such that $\Ee_{ptn,-e}([E])$ is persistent, then contract $e$. Moreover, if after the contraction, there are two node-disjoint paths between two nodes,  then we can apply Step I again so that the resulting graph enjoys the properties in Proposition~\ref{prop-unique-path}.
+%
+\item If there are an arc $e$ from $[E]$ to $[F]$ labeled by $\dllseg(P;L)$ such that $\Ee_{ptn,-e}([L])$ is persistent, then contract $e$. Moreover, if after the contraction, there are two node-disjoint paths between two nodes,  then we can apply Step I again so that the resulting graph enjoys the properties in Proposition~\ref{prop-unique-path}.
+%
 \end{enumerate}
-Note that $\Ee([E']) \setminus \Ee_{-e}([E'])$ denote the set of arcs such that they are reachable from $[E']$, in addition, they become unreachable from $[E']$ if $e$ is removed, in other words, every path from $[E']$ to the arc go through $e$.
+%Note that $\Ee([E']) \setminus \Ee_{-e}([E'])$ denote the set of arcs such that they are reachable from $[E']$, in addition, they become unreachable from $[E']$ if $e$ is removed, in other words, every path from $[E']$ to the arc go through $e$.
 
 
 
@@ -612,26 +627,17 @@ Note that $\Ee([E']) \setminus \Ee_{-e}([E'])$ denote the set of arcs such that 
 
 %can check the satisfiability as follows:
 
-\smallskip
-
-\noindent {\bf Step III}. Let $\Gg''' :=\Gg''$. If $\Gg''' \neq \bot$, then repeat the following procedure until no more reductions can be done.
-\begin{enumerate}
-\item If there is a node $[E]$ satisfying one of the following conditions, then let $\Gg''':=\bot$ and exit the loop,
-\begin{itemize}
-\item there is an undirected arc from $[E]$ to itself,
-%
-\item there are two field-labeled arcs out of $[E]$.
-\end{itemize}
-%
-\item If there is an arc $e$ from $[E]$ to $[F]$ such that $\Ee_{ptn,-e}([E])$ is persistent, then contract $e$.
-\end{enumerate}
-
-
-
 \begin{proposition} \label{prop:nfdllseg}
-Let $\Gg$ be an SLID[$\dllseg$] graph and $\Gg'''$ be the graph obtained from $\Gg$ after Step I-III.  Then $\Gg''' = \bot$ iff $\Gg$ is unsatisfiable, in addition, if $\Gg'''  \neq \bot$, then $\Gg$ and $\Gg'''$ are equivalent. Moreover, every pair of SLID[$\dllseg$] graphs $\Gg'''_1,\Gg'''_2$ obtained from $\Gg$ after Step I-III are isomorphic.
+Let $\Gg$ be an SLID[$\dllseg$] graph and $\Gg''$ be the graph obtained from $\Gg$ after Step I-II.  Then $\Gg'' = \bot$ iff $\Gg$ is unsatisfiable, in addition, if $\Gg''  \neq \bot$, then $\Gg$ and $\Gg''$ are equivalent. 
+%Moreover, every pair of SLID[$\dllseg$] graphs $\Gg''_1,\Gg'''_2$ obtained from $\Gg$ after Step I-III are isomorphic.
 \end{proposition}
 
+\begin{proof}
+To be done.
+
+The idea: Each step of the reduction preserves the satisfiability. For every pair of variables $E,F$, it hods that $\varphi \models E = F \wedge \ltrue$ iff $[E]=[F]$ in $\Gg''$.
+\qed
+\end{proof}
 
 %Let $[E]$ be a node in a graph $\Gg$ and $e$ be an arc out of $[E]$. We use $\Ee_{-e}([E])$ to denote the set of arcs that are still reachable from $[E]$ in $\Gg - e$, that is, the graph obtained from $\Gg$ by removing the arc $e$.
 
