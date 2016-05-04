@@ -25,7 +25,7 @@
 \usepackage{pgf}
 \usepackage{tikz}
 \usetikzlibrary{arrows,automata}
-%\usepackage{dsfont}
+%\usepackage{dsfont}   
 
 %\usepackage[noamssymb]{dlfltxbcodetips}
 
@@ -534,7 +534,7 @@ Similarly to SLID[$\lseg$] graphs, we can define SLID[$\dllseg$] graphs.
 
 We present the following two-step procedure to simplify the SLID[$\dllseg$]-graphs.
 
-Before presenting the algorithm, we introduce some notations. When we say that ``merge two nodes $[E]$ and $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. We say that ``contract an arc $e$ from $[E]$ to $[F]$ and labeled by $\dllseg(P;L)$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$ in $\Gg$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs related to them) are removed, finally, $[P]$ and $[L]$ are merged.  
+Before presenting the algorithm, we introduce some notations. When we say that ``merge two nodes $[E]$ and $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. We say that ``contract an arc $e$ from $[E]$ to $[F]$ and labeled by $\dllseg(P;L)$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$ in $\Gg$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs related to them) are removed, finally, $[P]$ and $[L]$ are merged.
 
 
 \smallskip
@@ -571,7 +571,7 @@ The collection of simple cycles in $\Ss$ is organised into a tree. More precisel
 Before presenting the second step, we introduce some notations.
 
 \begin{definition}[{Arcs reachable from $[E]$ through $e$}]
-Let $\Gg$ be an SLID[$\dllseg$] graph, $[E]$ be a node in $\Gg$, and $e$ be an arc out of $[E]$. Then an arc $e' \in \Ee([E])$ is said to be reachable from $[E]$ through $e$ if every path from $[E]$ to $e'$ goes through $e$. Let $\Ee_{e}([E])$ denote the set of arcs reachable from $[E]$ through $e$, with $e$ itself included. 
+Let $\Gg$ be an SLID[$\dllseg$] graph, $[E]$ be a node in $\Gg$, and $e$ be an arc out of $[E]$. Then an arc $e' \in \Ee([E])$ is said to be reachable from $[E]$ through $e$ if every path from $[E]$ to $e'$ goes through $e$. Let $\Ee_{e}([E])$ denote the set of arcs reachable from $[E]$ through $e$, with $e$ itself included.
 \end{definition}
 
 
@@ -609,7 +609,7 @@ Let $\Gg$ be an SLID[$\dllseg$] graph and $\varphi_\Gg = \Pi \wedge \Sigma$. The
 \item there are two field-labeled arcs out of $[E]$.
 \end{itemize}
 %
-\item If there are a node $[E']$ and two distinct variables $E$ and $F$ such that $[E] \neq [F]$,  there are at least two arcs out of $[E']$, and for each arc $e$ out of $[E']$, it holds that $\big [\bigwedge \limits_{e' \in \Ee_e([E'])} \phi_{e'} \big] \models E=F$, then merge $[E]$ and $[F]$. 
+\item If there are a node $[E']$ and two distinct variables $E$ and $F$ such that $[E] \neq [F]$,  there are at least two arcs out of $[E']$, and for each arc $e$ out of $[E']$, it holds that $\big [\bigwedge \limits_{e' \in \Ee_e([E'])} \phi_{e'} \big] \models E=F$, then merge $[E]$ and $[F]$.
 Moreover, if after the merging, there are two node-disjoint paths between two nodes,  then we can apply Step I again so that the resulting graph enjoys the properties in Proposition~\ref{prop-unique-path}.
 %
 %\item If there are two distinct nodes $[E]$ and $[F]$ and two node-disjoint simple paths from $[E]$ to $[F]$ (except the endpoints $[E],[F]$), then merge $[E]$ and $[F]$.
@@ -628,7 +628,7 @@ Moreover, if after the merging, there are two node-disjoint paths between two no
 %can check the satisfiability as follows:
 
 \begin{proposition} \label{prop:nfdllseg}
-Let $\Gg$ be an SLID[$\dllseg$] graph and $\Gg''$ be the graph obtained from $\Gg$ after Step I-II.  Then $\Gg'' = \bot$ iff $\Gg$ is unsatisfiable, in addition, if $\Gg''  \neq \bot$, then $\Gg$ and $\Gg''$ are equivalent. 
+Let $\Gg$ be an SLID[$\dllseg$] graph and $\Gg''$ be the graph obtained from $\Gg$ after Step I-II.  Then $\Gg'' = \bot$ iff $\Gg$ is unsatisfiable, in addition, if $\Gg''  \neq \bot$, then $\Gg$ and $\Gg''$ are equivalent.
 %Moreover, every pair of SLID[$\dllseg$] graphs $\Gg''_1,\Gg'''_2$ obtained from $\Gg$ after Step I-III are isomorphic.
 \end{proposition}
 
