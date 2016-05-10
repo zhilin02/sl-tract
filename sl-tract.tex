@@ -1171,10 +1171,12 @@ The entailment problem of SLID$[\dllseg]$ can be decided in polynomial time.
 The following two examples might be interesting:
 $E\neq F \wedge L\neq E \wedge \dllseg(E, P ; F, L)$ and $E\neq F\wedge L= E  \wedge \dllseg(E, P ; F, L)$. Both formulae are satisfiable, and they force the length of the model: for the former, the heap size must be greater than 1; for the latter, the size of the heap must be   
 
-Moreover, for $\dllseg(E, P; F, F)$, we are forced to have $E=F=P$. 
+Moreover, for $\dllseg(E, P; F, F)$, we are forced to have $E=F=P$. \zhilin{This is not true. For instance, consider $P<- prev - E <-prev,next -> F ->next ->F$.}
 
 A further example $E_1\neq E_2\neq E_3\wedge F_2\neq F_2'\wedge \dllseg(E_1, F_1; E_2, F_2)\sep \dllseg(E_2, F'_2; E_3, F_3)$, which is unsatisfiable. 
 \end{example}
+
+\zhilin{In general, I like this idea of splitting $\dllseg(E,P; F, L)$ into $\lseg^\rightarrow(E;F)$ and $\lseg^\leftarrow(L; P)$. But I think the two edges should be put into a group in the sense that one is nonempty iff the other is nonempty.}
 
 To attack the satisfiability, for $\dllseg(E, P; F, L)$, we can obtain $\lseg^{\rightarrow}(E; F)$ and $\lseg^{\leftarrow}(L; P)$. Obviously, if $\dllseg(E, P; F, L)$ is satisfiable, both $\lseg^{\rightarrow}(E; F)$ and $\lseg^{\leftarrow}(L; P)$ are satisfiable. However, the reverse does not hold. 
 
