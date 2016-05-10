@@ -1164,7 +1164,50 @@ The entailment problem of SLID$[\dllseg]$ can be decided in polynomial time.
 
 \bibliography{sl}
 
+\appendix
+
+\section{Some random stuff}
+\begin{example} \label{example:tl}
+The following two examples might be interesting:
+$E\neq F \wedge L\neq E \wedge \dllseg(E, P ; F, L)$ and $E\neq F\wedge L= E  \wedge \dllseg(E, P ; F, L)$. Both formulae are satisfiable, and they force the length of the model: for the former, the heap size must be greater than 1; for the latter, the size of the heap must be   
+
+Moreover, for $\dllseg(E, P; F, F)$, we are forced to have $E=F=P$. 
+
+A further example $E_1\neq E_2\neq E_3\wedge F_2\neq F_2'\wedge \dllseg(E_1, F_1; E_2, F_2)\sep \dllseg(E_2, F'_2; E_3, F_3)$, which is unsatisfiable. 
+\end{example}
+
+To attack the satisfiability, for $\dllseg(E, P; F, L)$, we can obtain $\lseg^{\rightarrow}(E; F)$ and $\lseg^{\leftarrow}(L; P)$. Obviously, if $\dllseg(E, P; F, L)$ is satisfiable, both $\lseg^{\rightarrow}(E; F)$ and $\lseg^{\leftarrow}(L; P)$ are satisfiable. However, the reverse does not hold. 
+
+By examining $\lseg^{\rightarrow}(E; F)$, we can obtain a reduced graph and some further (implied) (in)equalities and a set of allocated \emph{edges} $\subseteq\{a_1, \cdots, a_n\}$, and we then examine $\lseg^{\leftarrow}(L; P)$, and can obtain a reduced graph and some further (implied) (in)equalities and update the info on allocated edges. By iterating these, we finally obtain two (reduced) graphs by which we can construct a model. 
+
+Let's first check Example \ref{exmp-dllseg-sat}.  
+\begin{itemize}
+\item The formula $\varphi_1:= E_1 \neq E_2 \wedge \dllseg(E_1,F_1; E_2, F_2) \sep F_2 \mapsto ((\fnext,E_3),(\fprev,E_4))$ is unsatisfiable: In this case, for the $\lseg^{\rightarrow}$, we have a "normal" graph, and both $a_1$ and $a_2$ are allocated. For the $\lseg^{\leftarrow}$, we have that $\lseg(F_2, F_1)\sep F_2 \mapsto ((\fnext,E_3),(\fprev,E_4))$, which clearly reduces to $\bot$ given that both $a_1$ and $a_2$ are allocated.
+
+\item The formula $\varphi_2 := F_1 \neq F_3 \wedge \dllseg(E_1, F_1; E_2, F_2) \sep  \dllseg(E_2, F_2; E_3, F_3) \sep \dllseg(E_1, F_1; E_4, F_4) \sep \dllseg(E_5, F_4; E_6, F_3)$ is unsatisfiable: for the $\lseg^{\rightarrow}$ part, we have $F_1 \neq F_3 \wedge \dllseg(E_1 ; E_2) \sep  \dllseg(E_2; E_3) \sep \dllseg(E_1; E_4) \sep \dllseg(E_5; E_6)$; for the $\lseg^{\leftarrow}$ part, we have $F_1 \neq F_3 \wedge \dllseg(F_2; F_1) \sep  \dllseg(F_3;  F_2) \sep \dllseg(F_4; F_1) \sep \dllseg(F_3; F_4)$. The graph for $\lseg^{\leftarrow}$ reduces to $\bot$. 
+ 
+%
+\item The formula $\varphi_3 := E_1 \neq E_5 \wedge F_4 \neq F_5 \wedge \dllseg(E_1, F_1; E_2, F_2) \sep \dllseg(E_2, E_1; E_3, F_3) \sep \dllseg(F_3, F_4; E_4, F_5) \sep \dllseg(E_1, F_6; E_5, F_7)$ is unsatisfiable: for the $\lseg^{\rightarrow}$ part, we have $ E_1 \neq E_5 \wedge F_4 \neq F_5 \wedge \dllseg(E_1; E_2) \sep \dllseg(E_2; E_3) \sep \dllseg(F_3; E_4) \sep \dllseg(E_1; E_5)$, then $a_4$ is allocated, and $a_1, a_2, a_3$ must be empty. It follows that $E_1=E_2=E_3=E_4=F_3$ and $F_1=F_2$ and $F_4=F_5$, which leads to a contraction. 
+ 
+\end{itemize}
+ 
+In general, the algorithm proceeds as follows:
+\begin{enumerate}
+\item $AllocatedEdge:=\emptyset$; $G^{\leftarrow}$, $G^{\rightarrow}$;
+
+\item Repeatedly reduce $G^{\leftarrow}$ and $G^{\rightarrow}$, and update $AllocatedEdge$;
+until there is nothing to do.
+
+\item if neither $G^{\leftarrow}$ nor $G^{\rightarrow}$ is $\bot$, we can construct a pseudo-model that each $a\notin  AllocatedEdge$ is given an empty heap (is there any problem here, or maybe this is not needed?! -- current not quite clear for me); but then for each $a\in AllocatedEdge$, we can extract the respective head, tail from $G^\rightarrow$ and the F, L info from $G^{\leftarrow}$. Hence, some further inconsistency might occur (see Example~\ref{example:tl})
+
+\end{enumerate}
+
 \end{document}
+
+%=====================================
+
+
+
 
 
 
