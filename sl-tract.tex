@@ -132,7 +132,7 @@ In this paper, we focus on separation logic with an inductive definition $P$ (ab
 \Sigma & ::=& \slemp\mid  E \mapsto \rho \mid P(E,\vec{E'}; F, \vec{F'}; \vec{B}) \mid \Sigma * \Sigma,
 \end{array}
 \]
-where $\rho$ is a tuple of elements from $\Ff \times \lvars$ and $P(E,\vec{E'}; F, \vec{F'})$ is an inductive predicate whose definition will be specified later. The formulae $\Pi$ and $\Sigma$ are called the \emph{pure} and \emph{spatial} formulae respectively. Atomic formulae of the form $E \mapsto \rho$ and $P(E,\vec{E'}; F, \vec{F'}; \vec{B})$ are called the \emph{points-to} and \emph{predicate} atoms respectively.
+where $\rho$ is a tuple of elements from $\Ff \times \lvars$ and $P(E,\vec{E'}; F, \vec{F'})$ is an inductive predicate whose definition will be specified later. The formulae $\Pi$ and $\Sigma$ are called the \emph{pure} and \emph{spatial} formulae respectively. Atomic formulae of the form $E \mapsto \rho$ and $P(E,\vec{E'}; F, \vec{F'}; \vec{B})$ are called the \emph{points-to} and \emph{predicate} atoms respectively. The variable $E$ in a spatial atom $a=E \mapsto \rho$ or $a=P(E,\vec{E'}; F, \vec{F'}; \vec{B})$ is called the \emph{root} of the atom, denoted by $\atomroot(a)$.
 
 %The predicate $th$ carries two (location) fields, i.e., left ($\slleft$) and right ($\slright$), denoting the left and the right branch of the binary tree under consideration.
 
@@ -484,170 +484,115 @@ The satisfiability of SLID[$\lseg$] formulae can be decided in polynomial time.
 
 \subsection{SLID[$\thole$]}
 
-
 \subsection{SLID[$\dllseg$]}
 
-Let $\varphi = \Pi \wedge \Sigma$ be an SLID[$\dllseg$] formula. Our goal is to show that the satisfiability of $\varphi$ can be decided in polynomial time. Without loss of generality, we assume that $\Pi$ in $\varphi$ is \emph{saturated} in the following sense: for every pair of distinct points-to atoms of $\Sigma$ rooted at $E_1,E_2$ respectively, it holds that $E_1 \neq E_2$ is a conjunct in $\Pi$.
+Our goal in this section is to show that the satisfiability of SLID[$\dllseg$] formulae can be solved in polynomial time.
 
-Before presenting the decision procedure for satisfiability, let us get some idea of the problem by some examples.
+\begin{theorem}\label{thm-sat-dllseg}
+The satisfiability problem of SLID[$\dllseg$] formulae can be decided in polynomial time.
+\end{theorem}
+
+
+
+Without loss of generality, in this section, we assume that all the SLID[$\dllseg$] formulae $\varphi = \Pi \wedge \Sigma$ satisfy that $\Sigma$ contains no $\slemp$ atoms. For SLID[$\dllseg$] formulae $\varphi = \Pi \wedge \Sigma$ such that $\Sigma$ contains $\slemp$ atoms, if $\Sigma = \slemp \sep \dots \sep \slemp$, then the satisfiability of $\varphi$ is reduced to that of $\Pi$, otherwise, $\slemp$ can be removed from $\Sigma$, without affecting the satisfiability of $\varphi$. Moreover, we assume that $\Pi$ in $\varphi$ is \emph{saturated} in the sense that for each pair of distinct points-to atoms $E \mapsto [\dots]$ and $E' \mapsto [\dots]$, it holds that $E \neq E'$ is a conjunct of $\Pi$.
+
+Before presenting the proof of Theorem~\ref{thm-sat-dllseg}, let us get some idea of the satisfiability problem by some examples.
 
 \begin{example}\label{exmp-dllseg-sat}
 Consider the following formulae.
 \begin{itemize}
-\item The formula $\varphi_1:= E_1 \neq E_2 \wedge \dllseg(E_1,F_1; E_2, F_2) \sep F_2 \mapsto ((\fnext,E_3),(\fprev,E_4))$ is unsatisfiable: $E_1 \neq E_2$ implies that a nonempty subheap $h$ should be assigned to $\dllseg(E_1, F_1; E_2, F_2)$. From this, we know that $F_2$ is already allocated in $h$, which contradicts the existence of a points-to atom out of $F_2$.
+\item The formula 
+$$\varphi_1:= E_1 \neq E_2 \wedge \dllseg(E_1,F_1; E_2, F_2) \sep F_2 \mapsto ((\fnext,E_3),(\fprev,E_4))$$ 
+is unsatisfiable: $E_1 \neq E_2$ implies that a nonempty subheap $h$ should be assigned to $\dllseg(E_1, F_1; E_2, F_2)$. From this, we know that $F_2$ is already allocated in $h$, which contradicts the existence of a points-to atom out of $F_2$.
 %
-\item The formula $\varphi_2 := F_1 \neq F_3 \wedge \dllseg(E_1, F_1; E_2, F_2) \sep  \dllseg(E_2, F_2; E_3, F_3) \sep \dllseg(E_1, F_1; E_4, F_4) \sep \dllseg(E_4, F_4; E_5, F_3)$ is unsatisfiable: From $F_1 \neq F_3$,  both $\dllseg(E_1, F_1; E_2, F_2) \sep  \dllseg(E_2, F_2; E_3, F_3)$ and $\dllseg(E_1, F_1; E_4, F_4) \sep \dllseg(E_4, F_4; E_5, F_3)$ correspond to a nonempty subheap, which contradicts to the semantics of separating conjunction.
+\item The formula 
+$$
+\begin{array}{l c l}
+\varphi_2 & := & F_1 \neq F_3 \wedge \dllseg(E_1, F_1; E_2, F_2) \sep  \dllseg(E_2, F_2; E_3, F_3) \sep \\
+& & \dllseg(E_1, F_1; E_4, F_4) \sep \dllseg(E_5, F_4; E_6, F_3)
+\end{array}
+$$ 
+is unsatisfiable: From $F_1 \neq F_3$,  both the subformula $\dllseg(E_1, F_1; E_2, F_2) \sep  \dllseg(E_2, F_2; E_3, F_3)$ and $\dllseg(E_1, F_1; E_4, F_4) \sep \dllseg(E_5, F_4; E_6, F_3)$ correspond to a nonempty subheap. This implies that $F_3$ is allocated twice, which contradicts to the semantics of separating conjunction.
 %
-\item The formula $\varphi_3 := E_1 \neq E_5 \wedge F_4 \neq F_5 \wedge \dllseg(E_1, F_1; E_2, F_2) \sep \dllseg(E_2, E_1; E_3, F_3) \sep \dllseg(F_3, F_4; E_4, F_5) \sep \dllseg(E_1, F_6; E_5, F_7)$ is unsatisfiable: $E_1 \neq E_5$ implies that $\dllseg(E_1, F_6; E_5, F_7)$ corresponds to a nonempty subheap, where $E_1$ is allocated. On the other hand, since $F_4 \neq F_5$ implies that $\dllseg(F_3, F_4; E_4, F_5)$ corresponds to a nonempty subheap, we know that either $\dllseg(E_1, F_1; E_2, F_2) \sep \dllseg(E_2, E_1; E_3, F_3)$ corresponds to a nonempty subheap where $E_1$ is allocated, or otherwise $E_1 = E_2 \wedge F_1 = F_2 \wedge E_2 = E_2 \wedge E_1 = F_3$ holds, then $E_1=F_3$ is allocated in $\dllseg(F_3, F_4; E_4, F_5)$. Therefore, $E_1$ is allocated twice and $\varphi_3$ is unsatisfiable.
+\item The formula 
+$$
+\begin{array}{l c l}
+\varphi_3 &:=& E_1 \neq E_5 \wedge F_4 \neq F_5 \wedge \dllseg(E_1, F_1; E_2, F_2) \sep \dllseg(E_2, E_1; E_3, F_3) \sep \\
+& & \dllseg(F_3, F_4; E_4, F_5) \sep \dllseg(E_1, F_6; E_5, F_7)
+\end{array}
+$$ 
+is unsatisfiable: $E_1 \neq E_5$ implies that $\dllseg(E_1, F_6; E_5, F_7)$ corresponds to a nonempty subheap, where $E_1$ is allocated. On the other hand, since $F_4 \neq F_5$ implies that $\dllseg(F_3, F_4; E_4, F_5)$ corresponds to a nonempty subheap, we know that either $\dllseg(E_1, F_1; E_2, F_2) \sep \dllseg(E_2, E_1; E_3, F_3)$ corresponds to a nonempty subheap where $E_1$ is allocated, or otherwise $E_1 = E_2 \wedge F_1 = F_2 \wedge E_2 = E_2 \wedge E_1 = F_3$ holds, then $E_1=F_3$ is allocated in $\dllseg(F_3, F_4; E_4, F_5)$. Therefore, $E_1$ is allocated twice and $\varphi_3$ is unsatisfiable.
 \end{itemize}
 \end{example}
 
 
-Let $\varphi = \Pi \wedge \Sigma$ be an SLID$[\dllseg]$ formula where $\Sigma \equiv a_1 \sep \dots \sep a_n$. We use $\sim_\Pi$ to denote the equivalence relation defined as follows: For $E,F \in \lvars(\varphi)$, $E \sim_\Pi F$ iff $\Pi \models E = F$. Note that the equivalence relation $\sim_\Pi$ can be computed from $\Pi$ in polynomial time. Moreover, we use $[E]_\Pi$ to denote the equivalence class of $\sim_\Pi$ containing $E$. We also abbreviate $[E]_\Pi$ as $[E]$ if $\Pi$ is clear from the context.
-
-%The challenge here is to find a proper definition of  ``allocated'' nodes.
+\newcommand\couple{\mathsf{Cpl}}
 
 \begin{definition}% [SL Graph for SLID$[\lseg]$ ]
-For any given SLID$[\dllseg]$ formula $\varphi$, we define a graph
+For any given SLID$[\dllseg]$ formula $\varphi = \Pi \wedge \Sigma$ such that $\Sigma = a_1 \sep \dots \sep a_n$, we define a graph
  $\Gg_\varphi=(\Vv_\varphi, \Rr_\varphi,   \Ll_{\varphi})$ where:
 
 \begin{itemize}
 \item $\Vv_\varphi = \{[E] \mid E \in \lvars(\varphi)\}$.
 
-%\item $\Ll_{\varphi,1}([E])=[E]$ for each $[E] \in \Vv_\varphi$.
-
-%\item For each $[E] \in \Vv_\varphi$, $\Ll_{\varphi,1}([E])=\{F \in \lvars(\varphi) \mid E \sim_\varphi F\}$.
-%\tl{$\Ll_{\varphi,1}$ is not very useful, basically you are saying $\Ll_{\varphi,1}([E])=[E]$?}
-
-\item  $\Rr_\varphi$ is the set of arcs and $\Ll_{\varphi}$ is the arc-labeling function, defined as follows:
+\item  $\Rr_\varphi$ is the set of arcs, $\Ll_{\varphi}$ is the arc-labeling function, defined as follows:
 \begin{itemize}
 \item for each pair $(E, F)$ such that $E \neq F$ occurs in $\Pi$, there is an \emph{undirected} arc $e$ between $[E]$ and $[F]$ --- we set $\Ll_{\varphi}(e) =\neq$,
 %
-\item for each pair $(E,F)$ such that $\Sigma$ contains a \emph{points-to atom} $a_i=E \mapsto [(\fnext,F), (\fprev,P)]$, there is a \emph{directed} arc $e$ from $[E]$ to $[F]$ --- this arc is said to be \emph{field-labeled} and we write $\Ll_{\varphi}(e)= \fnext((\fprev,P))$;
+\item for each pair $(E,F)$ such that $\Sigma$ contains a \emph{points-to atom} $a_i=E \mapsto [(\fnext,F), (\fprev,P)]$, there are a \emph{directed} arc $e$ from $[E]$ to $[F]$ labeled by $\fnext$ and a directed arc $e'$ from $[E]$ to $[P]$ labeled by $\fprev$ --- these two arcs are said to be \emph{field-labeled} and we write $\Ll_{\varphi}(e)= (\fnext,a_i)$ and $\Ll_{\varphi}(e')= (\fprev,a_i)$ respectively, moreover, we say that $a_i$ is the atom associated with $e$ and $e'$, denoted by $\atom(e)$ and $\atom({e'})$;
 
 %
-\item and for each pair $(E,F)$ such that $\Sigma$ contains a \emph{predicate atom} $a_i=\dllseg(E, P;F, L)$, there is a \emph{directed} arc $e$ from $[E]$ to $[F]$ labeled by $\dllseg(P; L)$  --- this arc is said to be \emph{predicate-labeled}  and we write $\Ll_{\varphi}(e)= \dllseg(P;L)$, \end{itemize}
+\item and for each pair $(E,F)$ such that $\Sigma$ contains a \emph{predicate atom} $a_i=\dllseg(E, P;F, L)$, there are an \emph{directed} arc $e$ from $[E]$ to $[F]$ labeled by $\lseg^\fnext$ and a directed arc $e'$ from $[L]$ to $[P]$ labeled by $\lseg^\fprev$  --- these two arcs are said to be \emph{predicate-labeled}  and we write $\Ll_{\varphi}(e)= (\lseg^\fnext,a_i)$ and $\Ll_\varphi(e')=(\lseg^\fprev, a_i)$, moreover, we say that $a_i$ is the atom associated with $e$ and $e'$, denoted by $\atom(e)$ and $\atom({e'})$. 
 \end{itemize}
+\end{itemize}
+We call the arcs labeled by $\fnext$ and $\lseg^\fnext$ as forward arcs and the arcs labeled by $\fprev$ and $\lseg^\fprev$ as backward arcs.
 \end{definition}
-
-Similarly to SLID[$\lseg$] graphs, we can define SLID[$\dllseg$] graphs.
-
-We present the following two-step procedure to simplify the SLID[$\dllseg$]-graphs.
-
-Before presenting the algorithm, we introduce some notations. When we say that ``merge two nodes $[E]$ and $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. We say that ``contract an arc $e$ from $[E]$ to $[F]$ and labeled by $\dllseg(P;L)$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$ in $\Gg$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs related to them) are removed, finally, $[P]$ and $[L]$ are merged.
-
-
-\smallskip
-\noindent{\bf Step I}. Let $\Gg':=\Gg$. Repeat the following procedure until no more reductions can be done.
-\begin{enumerate}
-\item If there is a node $[E]$ satisfying one of the following conditions, then let $\Gg':=\bot$ and exit the loop,
-\begin{itemize}
-\item there is an undirected arc from $[E]$ to itself,
-%
-\item there are two field-labeled arcs out of $[E]$.
-\end{itemize}
-%
-\item If there are two distinct nodes $[E]$ and $[F]$ and two node-disjoint simple paths from $[E]$ to $[F]$ (except the endpoints $[E],[F]$) in $\Gg'$, then merge $[E]$ and $[F]$.
-\end{enumerate}
-Note that Step I is nondeterministic since there may be multiple pairs of nodes $[E],[F]$ satisfying the condition in Step I.
-Let $\Gg'$ be an graph obtained after executing Step I on $\Gg$.
-
-
-\begin{proposition}\label{prop-unique-path}
-Suppose $\Gg$ is an SLID[$\dllseg$] graph and $\Gg' \neq \bot$ is a graph obtained from $\Gg$ by executing Step I. Then $\Gg'$ has a simple structure in the following sense.
-\begin{itemize}
-\item For each pair of distinct nodes $[E]$ and $[F]$ in $\Gg'$, there is at most one simple path from $[E]$ to $[F]$.
-%
-\item Each nontrivial SCC $\Ss$ of $\Gg'$ satisfies the following constraints.
-\begin{itemize}
-\item Each pair of different simple cycles in $\Ss$ share at most one node --- The set of shared nodes is called the set of cut nodes of $\Ss$, denoted by $\cutn(\Ss)$. Here by ``different'', we mean that the two sets of arcs on the two cycles are different.
- %
-\item
-The collection of simple cycles in $\Ss$ is organised into a tree. More precisely, let $\{C_1,\dots,C_n\}$ be the set of all the simple cycles in $\Ss$ and $\Tt_\Ss=(\{C_1,\dots,C_n\}, \cutn(\Ss), \Rr)$ be the undirected bipartite  graph such that for each $i: 1 \le i \le n$, $\{C_i, v\} \in \Rr$ iff $v \in \cutn(\Ss) \cap C_i$. Then $\Tt_\Ss$ is a tree.
-\end{itemize}
-\end{itemize}
-\end{proposition}
-
-Before presenting the second step, we introduce some notations.
 
 \begin{definition}[{Arcs reachable from $[E]$ through $e$}]
 Let $\Gg$ be an SLID[$\dllseg$] graph, $[E]$ be a node in $\Gg$, and $e$ be an arc out of $[E]$. Then an arc $e' \in \Ee([E])$ is said to be reachable from $[E]$ through $e$ if every path from $[E]$ to $e'$ goes through $e$. Let $\Ee_{e}([E])$ denote the set of arcs reachable from $[E]$ through $e$, with $e$ itself included.
 \end{definition}
 
-
-\begin{definition}[Potentially reachable]
-Let $\Gg$ be an SLID[$\dllseg$] graph. For a node $[E]$, the set of nodes that are \emph{potentially reachable} from $[E]$ in $\Gg$, denoted by $Ptn_{[E]}$, is the minimum set of nodes satisfying the following constraints,
-\begin{itemize}
-\item  $[E] \in Ptn_{[E]}$,
-
-\item for each $[E'] \in Ptn_{[E]}$, the set of nodes reachable from $[E']$ in $\Gg$ is a subset of $Ptn_{[E]}$,
-%
-\item if $[E'], [E''] \in Ptn_{[E]}$ and an arc labeled by $\dllseg(P; L)$ is reachable from $[E']$ such that $[P]=[E'']$ (resp. $[L]=[E'']$), then $[L] \in Ptn_{[E]}$ (resp. $[P] \in Ptn_{[E]}$).
-\end{itemize}
-Then we say that a node $[F]$ is \emph{potentially reachable} from $[E]$ if $[F] \in Ptn_{[E]}$. Moreover, we say a directed arc from $[E']$ to $[F']$  is potentially reachable from $[E]$ if $[E']$ is potentially reachable from $[E]$.
-\end{definition}
-For each node $[E]$ in an SLID[$\dllseg$] graph $\Gg$, let $\Ee_{ptn}([E])$ denote the set of directed arcs that are potentially reachable from $[E]$. Moreover, let $[E]$ be a node and $e$ be a directed arc out of $[E]$ in $\Gg$, we use $\Ee_{ptn, - e}([E])$  to denote the set of directed arcs that are potentially reachable in $\Gg-e$.
-
 \begin{example}
-Consider the formula $\varphi_3 := E_1 \neq E_5 \wedge F_4 \neq F_5 \wedge \dllseg(E_1, F_1; E_2, F_2) \sep \dllseg(E_2, E_1; E_3, F_3) \sep \dllseg(F_3, F_4; E_4, F_5) \sep \dllseg(E_1, F_6; E_5, F_7)$ in Example~\ref{exmp-dllseg-sat}. In $\Gg_\varphi$, all the directed arcs are potentially reachable from $[E_1]$.
+Suppose $\varphi:= \ltrue \wedge \dllseg(E_1, F_1; E_2, F_2) \sep \dllseg(E_2, F_2; E_3, F_3) \sep \dllseg(E_3, F_3; E_4, F_4) \sep \dllseg(E_1, F_1; E_5, F_5) \sep \dllseg(E_5, F_5; E_3, F_3)$. Let $e$ represent $\lseg^{\fnext}(E_1; E_2)$. Then $\Ee_e([E_1])=\{\lseg^{\fnext}(E_1; E_2), \lseg^{\fnext}(E_2; E_3)\}$. 
 \end{example}
 
+Suppose $[E]$ is a node in $\Gg$ and $e$ is an arc out of $[E]$. Then $\Ee_{-e}([E])$ denotes the set of arcs that are reachable from $[E]$ in $\Gg-e$. For a spatial atom $a_i$, let $\Ee[{a_i}]$ denote the set of directed arcs $e$ such that $\atom(e) = a_i$. 
+Let $\Ee_1$ and $\Ee_2$ be two sets of arcs. Then $\Ee_1$ and $\Ee_2$ are said to be \emph{atom-disjoint} if $\{\atom(e) \mid e \in \Ee_1\} \cap \{\atom(e) \mid e \in \Ee_2\} = \emptyset$. For an atom $a_i = \dllseg(E, P; F , L)$, define $\phi_{a_i}:= E = F \wedge P = L$.
 
 
 \begin{definition}[Persistent set of arcs]
-Let $\Gg$ be an SLID[$\dllseg$] graph and $\varphi_\Gg = \Pi \wedge \Sigma$. Then a set of arcs in $\Gg$, say $\Ee$, is said to be \emph{persistent} if either $\Ee$ contains a field-labeled arc, or otherwise $\bigwedge \limits_{e \in \Ee} \phi_e \wedge \Pi$ is unsatisfiable, where $\phi_e := E = F \wedge P = L $ for an arc $e$ from $[E]$ to $[F]$ labeled by $\dllseg(P; L)$.
+Let $\Gg$ be an SLID[$\dllseg$]-graph and $\varphi_\Gg = \Pi \wedge \Sigma$. Then a set of directed arcs in $\Gg$, say $\Ee'$, is said to be \emph{persistent} if either $\Ee'$ contains a field-labeled arc, or there are two nodes $[E],[F]$ in  $\Ee'$ such that they belong to the same connected component of $\Ee'$ and there is  a $\neq$-labeled arc between $[E]$ and $[F]$.
 \end{definition}
 
-\smallskip
+In the following, we present a procedure to simplify SLID[$\dllseg$]-graphs.
+Before presenting the algorithm, we introduce some notations. We say that ``contract a predicate-labeled arc $e$ from $[E]$ to $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$ in $\Gg$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs related to them) are removed.  We say that ``contract an atom $a_i$'', we mean that the two arcs associated with $a_i$ are both contracted. When we say that ``merge two nodes $[E]$ and $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. 
 
-\noindent {\bf Step II}. Let $\Gg'' :=\Gg'$. If $\Gg'' \neq \bot$, then repeat the following procedure until no more reductions can be done.
+
+
+\medskip
+\noindent Let $\Gg':=\Gg$. Repeat the following procedure until no more reductions can be done.
 \begin{enumerate}
-\item If there is a node $[E]$ satisfying one of the following conditions, then let $\Gg'':=\bot$ and exit the loop,
+\item If there is a node $[E]$ satisfying one of the following conditions, then let $\Gg':=\bot$ and exit the loop,
 \begin{itemize}
 \item there is an undirected arc from $[E]$ to itself,
 %
-\item there are two field-labeled arcs out of $[E]$.
+\item there are two field-labeled arcs out of $[E]$ such that they are associated with two different atoms.
 \end{itemize}
 %
-\item If there are a node $[E']$ and two distinct variables $E$ and $F$ such that $[E] \neq [F]$,  there are at least two arcs out of $[E']$, and for each arc $e$ out of $[E']$, it holds that $\big [\bigwedge \limits_{e' \in \Ee_e([E'])} \phi_{e'} \big] \models E=F$, then merge $[E]$ and $[F]$.
-Moreover, if after the merging, there are two node-disjoint paths between two nodes,  then we can apply Step I again so that the resulting graph enjoys the properties in Proposition~\ref{prop-unique-path}.
+\item For each pair of distinct nodes $[E']$ and $[F']$, if there are a node $[E]$ and two distinct arcs $e_1,e_2$ out of $[E]$ satisfying the following constraints, then merge $[E']$ and $[F']$: all the directed arcs reachable from $[E]$ are predicate-labeled, $\Ee_{e_1}([E])$ and $\Ee_{e_2}([E])$ are atom-disjoint, in addition, $\Pi \wedge \bigwedge \limits_{e' \in \Ee_{e_1}([E])} \phi_{\atom(e')} $ and $\Pi \wedge \bigwedge \limits_{e' \in \Ee_{e_2}([E])} \phi_{\atom(e')}$ are satisfiable, $\Pi \wedge \bigwedge \limits_{e' \in \Ee_{e_1}([E])} \phi_{\atom(e')} \models E' = F'$, and $\Pi \wedge \bigwedge \limits_{e' \in \Ee_{e_2}([E])} \phi_{\atom(e')} \models E' = F'$.
 %
-%\item If there are two distinct nodes $[E]$ and $[F]$ and two node-disjoint simple paths from $[E]$ to $[F]$ (except the endpoints $[E],[F]$), then merge $[E]$ and $[F]$.
-\item If there is an arc $e$ from $[E]$ to $[F]$ such that $\Ee_{ptn,-e}([E])$ is persistent, then contract $e$. Moreover, if after the contraction, there are two node-disjoint paths between two nodes,  then we can apply Step I again so that the resulting graph enjoys the properties in Proposition~\ref{prop-unique-path}.
-%
-\item If there are an arc $e$ from $[E]$ to $[F]$ labeled by $\dllseg(P;L)$ such that $\Ee_{ptn,-e}([L])$ is persistent, then contract $e$. Moreover, if after the contraction, there are two node-disjoint paths between two nodes,  then we can apply Step I again so that the resulting graph enjoys the properties in Proposition~\ref{prop-unique-path}.
-%
+\item If there are a node $[E]$ and an arc $e$ out of $[E]$ such that $e \not \in \bigcup \limits_{ e' \in \Ee_{-e}([E])} \Ee[\atom(e')]$ and $\bigcup \limits_{ e' \in \Ee_{-e}([E])} \Ee[\atom(e')]$ is persistent, then contract $\atom(e)$.
 \end{enumerate}
-%Note that $\Ee([E']) \setminus \Ee_{-e}([E'])$ denote the set of arcs such that they are reachable from $[E']$, in addition, they become unreachable from $[E']$ if $e$ is removed, in other words, every path from $[E']$ to the arc go through $e$.
+Note that the above procedure is nondeterministic since there may be multiple pairs of nodes $[E],[F]$ satisfying the conditions in item 2 and 3.
+Let $\Gg'$ be an graph obtained after executing the above procedure on $\Gg$.
+
+\medskip
+
+\begin{lemma}
+Let $\varphi$ be an SLID[$\dllseg$] formula, $\Gg$ be the graph representation of $\varphi$, and $\Gg'$ be a graph obtained from $\Gg$ by the aforementioned procedure. Then $\varphi$ is satisfiable iff $\Gg' \neq \bot$.
+\end{lemma}
 
 
-
-
-%Satisfiability: Suppose the graph in normal form is not empty, then we
-
-%can check the satisfiability as follows:
-
-\begin{proposition} \label{prop:nfdllseg}
-Let $\Gg$ be an SLID[$\dllseg$] graph and $\Gg''$ be the graph obtained from $\Gg$ after Step I-II.  Then $\Gg'' = \bot$ iff $\Gg$ is unsatisfiable, in addition, if $\Gg''  \neq \bot$, then $\Gg$ and $\Gg''$ are equivalent.
-%Moreover, every pair of SLID[$\dllseg$] graphs $\Gg''_1,\Gg'''_2$ obtained from $\Gg$ after Step I-III are isomorphic.
-\end{proposition}
-
-\begin{proof}
-To be done.
-
-The idea: Each step of the reduction preserves the satisfiability. For every pair of variables $E,F$, it hods that $\varphi \models E = F \wedge \ltrue$ iff $[E]=[F]$ in $\Gg''$.
-\qed
-\end{proof}
-
-%Let $[E]$ be a node in a graph $\Gg$ and $e$ be an arc out of $[E]$. We use $\Ee_{-e}([E])$ to denote the set of arcs that are still reachable from $[E]$ in $\Gg - e$, that is, the graph obtained from $\Gg$ by removing the arc $e$.
-
-
-
-\begin{theorem}
-The satisfiability problem of SLID[$\dllseg$] can be decided in polynomial time.
-\end{theorem}
-
-\fu{There is no problem in PTIME complexity. I am not sure on correctness.}
 \section{Entailment}
 
 In this section, we focus on the entailment problem.
@@ -1164,6 +1109,18 @@ The entailment problem of SLID$[\dllseg]$ can be decided in polynomial time.
 
 \bibliography{sl}
 
+\end{document}
+
+
+
+%=====================================
+
+
+
+
+
+
+
 \appendix
 
 \section{Some random stuff}
@@ -1204,111 +1161,103 @@ until there is nothing to do.
 
 \end{enumerate}
 
-\end{document}
 
-%=====================================
+\section{Satisfiability of $\slid[\dllseg]$}
 
+\newcommand\couple{\mathsf{Cpl}}
 
+\begin{definition}% [SL Graph for SLID$[\lseg]$ ]
+For any given SLID$[\dllseg]$ formula $\varphi = \Pi \wedge \Sigma$ such that $\Sigma = a_1 \sep \dots \sep a_n$, we define a graph
+ $\Gg_\varphi=(\Vv_\varphi, \Rr_\varphi,   \Ll_{\varphi})$ where:
 
+\begin{itemize}
+\item $\Vv_\varphi = \{[E] \mid E \in \lvars(\varphi)\}$.
 
-
-
-
-
-\hide{
-We repeat the following procedure to construct a normalised graph from $\Gg$. When we say that ``contract a predicate-labeled arc $e$ from $[E]$ to $[F]$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs into or out of them) are removed.
-%each arc $e'$ from $[E]$ to $[F]$ or $[F]$ to $[E]$ is replaced by an arc from $[E] \cup [F]$ to itself, each arc from $[E']$ to $[E]$ (resp. from $[E]$ to $[E']$) is replaced with an arc from $[E']$ to $[E] \cup [F]$ (resp. from $[E] \cup [F]$ to $[E']$), and each arc from $[F']$ to $[F]$ (resp. from $[F]$ to $[F']$) is replaced with an arc from $[F']$ to  $[E] \cup [F]$ (resp. an arc from $[E] \cup [F]$ to $[F']$).
+\item  $\Rr_\varphi$ is the set of arcs, $\Ll_{\varphi}$ is the arc-labeling function, defined as follows:
+\begin{itemize}
+\item for each pair $(E, F)$ such that $E \neq F$ occurs in $\Pi$, there is an \emph{undirected} arc $e$ between $[E]$ and $[F]$ --- we set $\Ll_{\varphi}(e) =\neq$,
 %
-Moreover, $[E] \cup [F]$ is set to be allocated iff either $[E]$ or $[F]$ is allocated.
-When we say that ``merge two nodes $[E]$ and $[F]$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. Moreover, $[E] \cup [F]$ is set to be allocated iff either $[E]$ or $[F]$ is allocated.
-\begin{description}
-\item[Step I] If there is a node $[E]$ satisfying one of the following conditions, then return $\bot$,
-%\tl{remark: corresponds to \cite{CHO+11}, (i)}
+\item for each pair $(E,F)$ such that $\Sigma$ contains a \emph{points-to atom} $a_i=E \mapsto [(\fnext,F), (\fprev,P)]$, there are a \emph{directed} arc $e$ from $[E]$ to $[F]$ labeled by $\fnext$ and a directed arc $e'$ from $[E]$ to $[P]$ labeled by $\fprev$ --- these two arcs are said to be \emph{field-labeled} and we write $\Ll_{\varphi}(e)= (\fnext,a_i)$ and $\Ll_{\varphi}(e')= (\fprev,a_i)$ respectively, moreover, we say that $a_i$ is the atom associated with $e$ and $e'$, denoted by $\atom(e)$ and $\atom({e'})$;
+
+%
+\item and for each pair $(E,F)$ such that $\Sigma$ contains a \emph{predicate atom} $a_i=\dllseg(E, P;F, L)$, there are an \emph{directed} arc $e$ from $[E]$ to $[F]$ labeled by $\lseg^\fnext$ and a directed arc $e'$ from $[L]$ to $[P]$ labeled by $\lseg^\fprev$  --- these two arcs are said to be \emph{predicate-labeled}  and we write $\Ll_{\varphi}(e)= (\lseg^\fnext,a_i)$ and $\Ll_\varphi(e')=(\lseg^\fprev, a_i)$, moreover, we say that $a_i$ is the atom associated with $e$ and $e'$, denoted by $\atom(e)$ and $\atom({e'})$. 
+\end{itemize}
+\end{itemize}
+We call the arcs labeled by $\fnext$ and $\lseg^\fnext$ as forward arcs and the arcs labeled by $\fprev$ and $\lseg^\fprev$ as backward arcs.
+\end{definition}
+
+For a spatial atom $a_i$, let $\Ee[{a_i}]$ denote the set of directed arcs $e$ such that $\atom(e) = a_i$. 
+
+\begin{definition}[Persistent set of arcs]
+Let $\Gg$ be an SLID[$\dllseg$]-graph and $\varphi_\Gg = \Pi \wedge \Sigma$. Then a set of directed arcs in $\Gg$, say $\Ee'$, is said to be \emph{persistent} if either $\Ee'$ contains a field-labeled arc, or there are two nodes $[E],[F]$ in  $\bigcup \limits_{e \in \Ee'} \Ee[{\atom(e)}]$ such that they belong to the same connected component of $\bigcup \limits_{e \in \Ee'} \Ee[{\atom(e)}]$ and there is  a $\neq$-labeled arc between $[E]$ and $[F]$.
+\end{definition}
+For each node $[E]$ in an SLID[$\dllseg$] graph $\Gg$, let $\Ee([E])$ denote the set of directed arcs that are reachable from $[E]$. For a set of directed arcs $\Ee'$, let $\atoms(\Ee')$ denote $\bigcup \limits_{e \in \Ee'} \{\atom(e)\}$. Let $\pi_1$ and $\pi_2$ be two paths. Then $\pi_1$ and $\pi_2$ are said to be  node-disjoint if the set of nodes in $\pi_1$ is disjoint from the set of nodes in $\pi_2$, except that they may share the last node. Moreover, $\pi_1$ and $\pi_2$ are said to be \emph{atom-disjoint} if $ \atoms(\pi_1) \cap \atoms(\pi_2) = \emptyset$.
+
+
+In the following, we present a two-step procedure to simplify SLID[$\dllseg$]-graphs.
+Before presenting the algorithm, we introduce some notations. We say that ``contract a predicate-labeled arc $e$ from $[E]$ to $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$ in $\Gg$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs related to them) are removed.  When we say that ``merge two nodes $[E]$ and $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. 
+%In addition, in both cases, the relation $\couple$ is adjusted accordingly.
+
+%Moreover, $[E] \cup [F]$ is set to be allocated iff either $[E]$ or $[F]$ is allocated.
+
+%Moreover, $[E] \cup [F]$ is set to be allocated iff either $[E]$ or $[F]$ is allocated.
+
+
+
+We are ready to present the first step of the simplification procedure.
+
+
+
+
+\smallskip
+\noindent{\bf Step I}. Let $\Gg':=\Gg$. Repeat the following procedure until no more reductions can be done.
+\begin{enumerate}
+\item If there is a node $[E]$ satisfying one of the following conditions, then let $\Gg':=\bot$ and exit the loop,
+\begin{itemize}
+\item there is an undirected arc from $[E]$ to itself,
+%
+\item there are two field-labeled arcs out of $[E]$ such that they are associated with two different atoms.
+\end{itemize}
+%
+\item If there are two distinct nodes $[E]$ and $[F]$ and two node-disjoint and atom-disjoint simple paths from $[E]$ to $[F]$ (except the endpoints $[E],[F]$) in $\Gg'$, then merge $[E]$ and $[F]$.
+\end{enumerate}
+Note that Step I is nondeterministic since there may be multiple pairs of nodes $[E],[F]$ satisfying the condition in Step I.
+Let $\Gg'$ be an graph obtained after executing Step I on $\Gg$.
+
+
+\begin{proposition}\label{prop-unique-path}
+Suppose $\Gg$ is an SLID[$\dllseg$] and $\Gg' \neq \bot$ is a graph obtained from $\Gg$ by executing Step I. Then $\Gg'$ has a simple structure in the following sense.
+\begin{itemize}
+\item For each pair of distinct nodes $[E]$ and $[F]$ in $\Gg'$, there is at most one simple path from $[E]$ to $[F]$.
+%
+\item Each nontrivial SCC $\Ss$ of $\Gg'$ satisfies the following constraints.
+\begin{itemize}
+\item Each pair of different simple cycles in $\Ss$ share at most one node --- The set of shared nodes is called the set of cut nodes of $\Ss$, denoted by $\cutn(\Ss)$. Here by ``different'', we mean that the two sets of arcs on the two cycles are different.
+ %
+\item
+The collection of simple cycles in $\Ss$ is organised into a tree. More precisely, let $\{C_1,\dots,C_n\}$ be the set of all the simple cycles in $\Ss$ and $\Tt_\Ss=(\{C_1,\dots,C_n\}, \cutn(\Ss), \Rr)$ be the undirected bipartite  graph such that for each $i: 1 \le i \le n$, $\{C_i, v\} \in \Rr$ iff $v \in \cutn(\Ss) \cap C_i$. Then $\Tt_\Ss$ is a tree.
+\end{itemize}
+\end{itemize}
+\end{proposition}
+
+Let $[E]$ be a node in a graph $\Gg$ and $e$ be an arc out of $[E]$. We use $\Ee_{-e}([E])$ to denote the set of arcs that are still reachable from $[E]$ in $\Gg - e$, that is, the graph obtained from $\Gg$ by removing the arc $e$.
+
+%Let $C$ be a simple cycle in $\Gg'$. A node $[F]$ is said to be \emph{owned} by a node $[E]$ in $C$ if there is a simple path from $[E]$ to $[F]$ where the first arc goes to a node not in the same SCC as $[E]$. A directed arc $e$ is said to be owned by $[E]$ in $C$ if the source node of $e$ is owned by $[E]$.  For a node $[E]$ in $C$, let $\nown([E])$ (resp. $\aown([E])$) denote the set of nodes (resp. directed arcs) owned by $[E]$.
+
+\smallskip
+
+\noindent {\bf Step II}. Let $\Gg'' :=\Gg'$. If $\Gg'' \neq \bot$, then repeat the following procedure until no more reductions can be done.
+\begin{enumerate}
+\item If there is a node $[E]$ satisfying one of the following conditions, then let $\Gg'':=\bot$ and exit the loop,
 \begin{itemize}
 \item there is an undirected arc from $[E]$ to itself,
 %
 \item there are two field-labeled arcs out of $[E]$.
-%
-%\item there are two arcs from $[E]$ to $[F_1]$ and $[F_2]$ respectively such that  $[F_1] \neq [F_2]$, the arc from $[E]$ to $[F_1]$ is field-labeled, and $[F_2]$ is allocated,
-
-%\item there are two arcs from $[E]$ to $[F_1]$ and $[F_2]$ respectively such that $[F_1] \neq [F_2]$, and $[F_1], [F_2]$ are allocated,
-
-%\item $[E]$ is supported by two distinct successors $[F_1], [F_2]$ and it has another allocated successor $[F_3]$,
 \end{itemize}
 %
-\item[Step II (for C1)] If there are two distinct nodes $[E]$ and $[F]$ and two node-disjoint simple paths from $[E]$ to $[F]$ (except the endpoints $[E],[F]$), then merge $[E]$ and $[F]$.
-%
-\item[Step III (for C2)] If there is an arc $e$ from $[E]$ to $[F]$ such that $\Ee([E]) \setminus (\{e\} \cup \Ee([F]))$ is persistent, then contract $e$.
-% are a node $[E]$ and an arc $e$ such that $e$ is either a field-labeled arc from $[E]$ to some node $[F]$ or a predicate-labeled arc from $[E]$ to some allocated node $[F]$, then for each (predicate-labeled) arc $e'$ from $[E]$ to $[F']$ such that $[F']  \neq [F]$,  contract $e'$.
-%
-%\item[Step IV (for C3)] If there is a node $[E]$ supported by $[F_1]$ and $[F_2]$, then for each (predicate-labeled) arc $e$ from $[E]$ to $[F_3]$ such that $[F_3]  \neq [F_1], [F_2]$,  contract $e$.
-%
-%
-\item[Step IV] If none of the conditions in Step I-III is satisfied, then exit the loop and return the resulting graph.
-\end{description}
-It is not hard to see that if the condition in Step I is satisfied, then the resulting graph is unsatisfiable. Moreover, each of Step II-III above preserves the set of models of SLID[$\lseg$]-graphs. Therefore, we conclude that the graph $\Gg'$ constructed by the above procedure satisfies that $\Gg' = \bot$ iff $\Gg$ is unsatisfiable, in addition, $\Gg'$ and $\Gg$ are equivalent.
-
-Note that strictly speaking, the aforementioned procedure is nondeterministic, e.g. in Step II, there may be multiple pair of nodes $[E]$ and $[F]$ satisfying the condition. In the following, we show that there is a unique (up to isomorphism) normalised graph constructed from $\Gg$, despite the nondeterminism.
-}
+\item If there is an arc $e$ from $[E]$ to $[F]$ such that $\Ee_{-e}([E])$ is persistent, then contract $e$.
+\end{enumerate}
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\hide{
-For an arc $e$ from $[E]$ to $[F]$ labeled  by $\dllseg(P, L)$, we use $\Pi_e$ denote the pure formula $E = F \wedge P=L$.
-For a node $[E]$ in $\Gg$ such that all the directed arcs potentially reachable from $[E]$ are predicate-labeled, let $\Pi_{ctr, [E]}$ denote the pure constraint obtained by contracting all these arcs, more specifically, $\Pi_{ctr, [E]}$ is the conjunction of $\Pi_e$ for all arcs $e$ that are potentially reachable from $[E]$.
-
-\begin{definition}[Allocated nodes for $\dllseg$]
-A node $[E]$ in an SLID[$\dllseg$]-graph $\Gg$ is allocated if either there is a field-labeled arc potentially reachable from $[E]$, or otherwise $\Pi_{ctr,[E]} \wedge \Pi$ is unsatisfiable.
-\end{definition}
-
-Note that the satisfiability of $\Pi_{ctr,[E]} \wedge \Pi$ can be decided in polynomial time since it contains just conjunctions of equalities and inequalities of variables.
-
-\begin{proposition}
-Let $[E]$ be a node in $\Gg_\varphi$. Then $[E]$ is allocated iff for each state $(s,h)$ such that $(s,h) \models \varphi$, it holds $s(E) \in \dom(h)$.
-\end{proposition}
-
-\begin{definition}[Normalised {SLID[$\dllseg$]} graphs]\label{def-norm-dllseg-graph}
-An SLID[$\lseg$]-graph $\Gg$ is said to be normalised if the following conditions hold:
-\begin{description}
-\item[C1] For all pairs of distinct nodes $[E]$ and $[F]$, there are no two node-disjoint simple paths from $[E]$ to $[F]$.
-
-\item[C2] There does not exist an arc $e$ from $[E]$ to $[F]$ such that $\Ee_{ptn}([E]) \setminus (\{e\} \cup \Ee_{ptn}([F]))$ is persistent.
-
-%For each node $[E]$, if there is a field-labeled arc $e$ out of $[E]$ or an arc $e$ from $[E]$ to $[F]$ such that $[F]$ is allocated, then there are no other arcs out of $[E]$.
-%
-%\item[C3] For each allocated node $[E]$ which is supported by a pair of distinct successors $[E_1]$ and $[E_2]$, there are exactly two directed arcs out of $[E]$ (towards $[E_1]$ and $[E_2]$ respectively).
-\end{description}
-\end{definition}
-}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\hide{
-\begin{example}
-Consider the formula $\varphi$ illustrated in Fig.\ref{fig-dllseg-alloc}. The node  $E_2$ should be seen as  ``allocated''. To see this, either the arc from $E_2$ to $E_3$ corresponds to an nonempty heap, or otherwise, $E_2 = E_3 \wedge E_6 = E_2$. In the latter case, since there is a points-to atom out of $E_6$, $E_2=E_6$ should be seen as allocated. From the fact that $E_1$ is allocated, we infer that the arc from $E_1$ to $E_8$ should always correspond to the empty heap. Thus, the arc from $E_1$ to $E_8$ can be contracted, that is, the arc is removed, and the pure constraint $E_1 = E_8 \wedge E_{10}=E_{11}$ is added.
-\end{example}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[scale=0.8]{dll_alloc.pdf}
-\end{center}
-\caption{Graph $\Gg_\varphi$}\label{fig-dllseg-alloc}
-\end{figure}
-
-And certainly for normal forms, we have the rules:
-\begin{itemize}
-\item If $L$ is allocated, and $E\stackrel{(P,L)}{\rightarrow} F$, then it must be the case that $E=F$.
-
-\item If $E\stackrel{(P,L)}{\rightarrow} F$, and $E, F$ are allocated, then $L$ cannot be allocated;
-
-\item $\dllseg(E, P; F, L)\sep \dllseg(L, F; P, E)$, then they both are empty?! ( because if $E=F\wedge P=L$, then...; otherwise $E\neq F$, then the second cannot be empty, but $L$ is shared. )
-
-%THE LESSON: once $\dllseg(E, P; F, L)$ is not empty, then $L$ is assigned.
-
-%\item $\dllseg(E, P; F, L)\sep \dllseg(L, F; F', E)$, then they both are empty?!, i.e., $E=F, P=L, L=F'$.
-
-
-\item probably more ...
-\end{itemize}
-}
+\section{Entailment of $\slid[\dllseg]$}
