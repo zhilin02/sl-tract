@@ -588,11 +588,11 @@ Before presenting the algorithm, we introduce some notations. We say that ``cont
 \[\Pi \wedge \bigwedge \limits_{i \in [k]} \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E'=F',\]
 %
 \item for each $a_j \in \bigcup \limits_{i \in [k]} \bigcup \limits_{e' \in \Ee_{e_i}([E])} \{\atom(e')\}$, if there is exactly one arc in $\bigcup \limits_{i \in [k] }  \Ee_{e_i}([E])$ associated with $a_j$, let $i_0$ be the index satisfying that $\Ee_{e_{i_0}}([E])$ contains an arc associated with $a_j$, then 
-\[\bigwedge \limits_{i \in [k]  \setminus\{i_0\} } \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E' = F',\]
+\[\Pi \wedge \bigwedge \limits_{i \in [k]  \setminus\{i_0\} } \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E' = F',\]
 %
 \item for each $a_j \in \bigcup \limits_{ i \in [k]} \bigcup \limits_{e' \in \Ee_{e_i}([E])} \{\atom(e')\}$, if there are two arcs in $\bigcup \limits_{ i \in [k] }  \Ee_{e_i}([E])$ associated with $a_j$, let $i_0, i_1$ be the two indices satisfying that both $\Ee_{e_{i_0}}([E])$ and $\Ee_{e_{i_1}}([E])$ contain an arc associated with $a_j$, then $k > 2$ and 
 \[
-\bigwedge \limits_{ i \in [k] \setminus \{i_0, i_1\} } \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E' = F'.
+\Pi \wedge \bigwedge \limits_{ i \in [k] \setminus \{i_0, i_1\} } \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E' = F'.
 \]
 \end{itemize}
 %
