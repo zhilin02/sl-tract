@@ -553,7 +553,7 @@ Let $\Gg$ be an SLID[$\dllseg$] graph, $[E]$ be a node in $\Gg$, and $e$ be an a
 \end{definition}
 
 \begin{example}
-Suppose $\varphi:= \ltrue \wedge \dllseg(E_1, E_5; E_2, E_1) \sep \dllseg(E_1, E_3; E_4, E_2) \sep \dllseg(E_4, E_3; E_3, E_5)$. Let $e_1, e_2, e_3$ represent $\lseg^{\fnext}(E_1; E_2)$, $\lseg^\fnext(E1; E_4)$, and $\lseg^\fprev(E_1; E_5)$ respectively. Then $\Ee_{e_1}([E_1])=\{\lseg^{\fnext}(E_1; E_2), \lseg^{\fnext}(E_2; E_3)\}$, $\Ee_{e_2}([E_1])=\{\lseg^\fprev(E_1; E_4), \lseg^\fnext(E_4; E_3)\}$, and $\Ee_{e_3}([E_1])=\{\lseg^\fprev(E_1; E_5), \lseg^\fprev(E_5; E_3)\}$. 
+Suppose $\varphi:= \ltrue \wedge \dllseg(E_1, E_5; E_2, E_1) \sep \dllseg(E_1, E_3; E_4, E_2) \sep \dllseg(E_4, E_3; E_3, E_5)$. Let $e_1, e_2, e_3$ represent $\lseg^{\fnext}(E_1; E_2)$, $\lseg^\fnext(E1; E_4)$, and $\lseg^\fprev(E_1; E_5)$ respectively. Then $\Ee_{e_1}([E_1])=\{\lseg^{\fnext}(E_1; E_2), \lseg^{\fnext}(E_2; E_3)\}$, $\Ee_{e_2}([E_1])=\{\lseg^\fnext(E_1; E_4), \lseg^\fnext(E_4; E_3)\}$, and $\Ee_{e_3}([E_1])=\{\lseg^\fprev(E_1; E_5), \lseg^\fprev(E_5; E_3)\}$. 
 \end{example}
 
 Suppose $[E]$ is a node in $\Gg$ and $e$ is an arc out of $[E]$. Then $\Ee_{-e}([E])$ denotes the set of arcs that are reachable from $[E]$ in $\Gg-e$. For a spatial atom $a_i$, let $\Ee[{a_i}]$ denote the set of directed arcs $e$ such that $\atom(e) = a_i$. 
