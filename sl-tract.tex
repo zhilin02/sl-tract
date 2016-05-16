@@ -553,7 +553,7 @@ Let $\Gg$ be an SLID[$\dllseg$] graph, $[E]$ be a node in $\Gg$, and $e$ be an a
 \end{definition}
 
 \begin{example}
-Suppose $\varphi:= \ltrue \wedge \dllseg(E_1, F_1; E_2, F_2) \sep \dllseg(E_2, F_2; E_3, F_3) \sep \dllseg(E_3, F_3; E_4, F_4) \sep \dllseg(E_1, F_1; E_5, F_5) \sep \dllseg(E_5, F_5; E_3, F_3)$. Let $e$ represent $\lseg^{\fnext}(E_1; E_2)$. Then $\Ee_e([E_1])=\{\lseg^{\fnext}(E_1; E_2), \lseg^{\fnext}(E_2; E_3)\}$. 
+Suppose $\varphi:= \ltrue \wedge \dllseg(E_1, E_5; E_2, E_1) \sep \dllseg(E_1, E_3; E_4, E_2) \sep \dllseg(E_4, E_3; E_3, E_5)$. Let $e_1, e_2, e_3$ represent $\lseg^{\fnext}(E_1; E_2)$, $\lseg^\fnext(E1; E_4)$, and $\lseg^\fprev(E_1; E_5)$ respectively. Then $\Ee_{e_1}([E_1])=\{\lseg^{\fnext}(E_1; E_2), \lseg^{\fnext}(E_2; E_3)\}$, $\Ee_{e_2}([E_1])=\{\lseg^\fprev(E_1; E_4), \lseg^\fnext(E_4; E_3)\}$, and $\Ee_{e_3}([E_1])=\{\lseg^\fprev(E_1; E_5), \lseg^\fprev(E_5; E_3)\}$. 
 \end{example}
 
 Suppose $[E]$ is a node in $\Gg$ and $e$ is an arc out of $[E]$. Then $\Ee_{-e}([E])$ denotes the set of arcs that are reachable from $[E]$ in $\Gg-e$. For a spatial atom $a_i$, let $\Ee[{a_i}]$ denote the set of directed arcs $e$ such that $\atom(e) = a_i$. 
@@ -579,7 +579,21 @@ Before presenting the algorithm, we introduce some notations. We say that ``cont
 \item there are two field-labeled arcs out of $[E]$ such that they are associated with two different atoms.
 \end{itemize}
 %
-\item For each pair of distinct nodes $[E']$ and $[F']$, if there are a node $[E]$ and two distinct arcs $e_1,e_2$ out of $[E]$ satisfying the following constraints, then merge $[E']$ and $[F']$: all the directed arcs reachable from $[E]$ are predicate-labeled, $\Ee_{e_1}([E])$ and $\Ee_{e_2}([E])$ are atom-disjoint, in addition, $\Pi \wedge \bigwedge \limits_{e' \in \Ee_{e_1}([E])} \phi_{\atom(e')} $ and $\Pi \wedge \bigwedge \limits_{e' \in \Ee_{e_2}([E])} \phi_{\atom(e')}$ are satisfiable, $\Pi \wedge \bigwedge \limits_{e' \in \Ee_{e_1}([E])} \phi_{\atom(e')} \models E' = F'$, and $\Pi \wedge \bigwedge \limits_{e' \in \Ee_{e_2}([E])} \phi_{\atom(e')} \models E' = F'$.
+\item For each pair of distinct nodes $[E']$ and $[F']$, if there is a node $[E]$ satisfying the following constraints, then  merge $[E']$ and $[F']$: 
+\begin{itemize}
+\item there are at least two arcs out of $[E]$, let $e_1,\dots, e_k$ be an enumeration of all these arcs, 
+
+\item if $\Pi \wedge \bigwedge \limits_{i \in [k]} \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')}$ is satisfiable, then 
+\[\Pi \wedge \bigwedge \limits_{i \in [k]} \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E'=F',\]
+%
+\item for each $a_j \in \bigcup \limits_{i \in [k]} \bigcup \limits_{e' \in \Ee_{e_i}([E])} \{\atom(e')\}$, if there is exactly one arc in $\bigcup \limits_{i \in [k] }  \Ee_{e_i}([E])$ associated with $a_j$, let $i_0$ be the index satisfying that $\Ee_{e_{i_0}}([E])$ contains an arc associated with $a_j$, then 
+\[\bigwedge \limits_{i \in [k]  \setminus\{i_0\} } \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E' = F',\]
+%
+\item for each $a_j \in \bigcup \limits_{ i \in [k]} \bigcup \limits_{e' \in \Ee_{e_i}([E])} \{\atom(e')\}$, if there are two arcs in $\bigcup \limits_{ i \in [k] }  \Ee_{e_i}([E])$ associated with $a_j$, let $i_0, i_1$ be the two indices satisfying that both $\Ee_{e_{i_0}}([E])$ and $\Ee_{e_{i_1}}([E])$ contain an arc associated with $a_j$, then $k > 2$ and 
+\[
+\bigwedge \limits_{ i \in [k] \setminus \{i_0, i_1\} } \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E' = F'.
+\]
+\end{itemize}
 %
 \item If there are a node $[E]$ and an arc $e$ out of $[E]$ such that $e \not \in \bigcup \limits_{ e' \in \Ee_{-e}([E])} \Ee[\atom(e')]$ and $\bigcup \limits_{ e' \in \Ee_{-e}([E])} \Ee[\atom(e')]$ is persistent, then contract $\atom(e)$.
 \end{enumerate}
