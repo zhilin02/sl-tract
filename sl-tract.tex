@@ -595,7 +595,7 @@ Before presenting the algorithm, we introduce some notations. We say that ``cont
 
 \noindent
 {\bf Procedure $\persistsimp(\Gg')$}.\\
-Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots a_n$.
+Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$.
 
 
 \noindent Repeat the following procedure until no more reductions can be done: For each $i: 1 \le i \le n$, if $a_i$ is a predicate atom such that $\Ee_{\Gg'}(a_i) \neq \emptyset$ and $\Ee^{atm}_{\Gg'-a_i}([E]) \cup \Ee^{atm}_{\Gg'-a_i}([F])$ is persistent, then contract $a_i$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_i)$.
@@ -605,7 +605,7 @@ Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\
 
 \noindent
 {\bf Procedure $\persistsimp(\Gg',a_i)$}.\\
-Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots a_n$, and $a_i$ is a predicate atom.
+Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$, and $a_i$ is a predicate atom.
 
 
 \noindent Repeat the following procedure until no more reductions can be done: For each $j: 1 \le j \le n$ such that $j \neq i$, if $a_j$ is a predicate atom such that $\Ee_{\Gg'}(a_j) \neq \emptyset$  and $\Ee^{atm}_{\Gg'-a_j}([E]) \cup \Ee^{atm}_{\Gg'-a_j}([F])$ is persistent with respect to $a_i$, then contract $a_j$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_j)$.
@@ -625,7 +625,7 @@ Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\
 %
 \item Let $\Gg':=\persistsimp(\Gg')$.
 %
-\item If there is a pair of distinct nodes $[E']$ and $[F']$ such that all the arcs from $ \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$  are predicate-labeled and for each $e \in \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$, it holds $\persistsimp(\Gg', \atom(e)) \models E' = F'$, then merge $[E']$ and $[F']$. 
+\item If there is a pair of distinct nodes $[E']$ and $[F']$ such that $[E']$ and $[F']$ belong to the same connected component of $ \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$,  all the arcs from $ \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$  are predicate-labeled, and for each $e \in \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$, it holds that $E', F'$ belong to the same node in $\persistsimp(\Gg', \atom(e))$, then merge $[E']$ and $[F']$. 
 
 \hide{
 \begin{itemize}
@@ -647,6 +647,32 @@ Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\
 \end{enumerate}
 Note that the above procedure is nondeterministic since there may be multiple pairs of nodes $[E'],[F']$ satisfying the conditions in item 3.
 %Let $\Gg'$ be an graph obtained after executing the above procedure on $\Gg$.
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[scale=0.8]{dllseg-equality.pdf}
+\end{center}
+\vspace{-6mm}
+\caption{Hidden equalities in SLID[$\dllseg$] formulae}
+\label{fig-dllseg-eq}
+\vspace{-6mm}
+\end{figure}
+
+
+
+\begin{example}
+Suppose $\varphi_1,\varphi_2,\varphi_3,\varphi_4$ are the SLID[$\dllseg$] formulae illustrated in Fig.~\ref{fig-dllseg-eq}(a)-(d), where all the atoms are predicate atoms. We claim that for each $j: 1 \le j \le 4$, $\varphi_j \models E_1 = E_2 \wedge \ltrue$. 
+\begin{itemize}
+\item For $\varphi_1$,  $\persistsimp(\Gg'_1, a_1)$ (resp. $\persistsimp(\Gg'_1, a_2)$) is obtained from $\Gg'_1$ by contracting $a_2$ (resp. $a_1$), then $E_1 =E_2 =E_3$   in  $\persistsimp(\Gg'_1, a_1)$ and $E_1= E_2= E_4$ in $\persistsimp(\Gg'_1,a_2)$. Therefore, $\varphi_1 \models E_1 = E_2 \wedge \ltrue$.
+%
+\item  For $\varphi_2$,  $\persistsimp(\Gg'_2, a_1)$ (resp. $\persistsimp(\Gg'_2, a_2)$) is obtained from $\Gg'_2$ by contracting $a_2$ and $a_3$ (resp. $a_1$ and $a_3$), then $E_1 = E_4 = E_3 = E_2$ in  $\persistsimp(\Gg'_2, a_1)$ and $E_1=E_4 = E_3 = E_5 = E_2$ in $\persistsimp(\Gg'_2,a_2)$. Therefore, $\varphi_2 \models E_1 = E_2 \wedge \ltrue$.
+%
+\item  For $\varphi_3$,  $\persistsimp(\Gg'_3, a_1)$ (resp. $\persistsimp(\Gg'_3, a_2)$, $\persistsimp(\Gg'_3, a_3)$) is obtained from $\Gg'_3$ by contracting $a_2$ and $a_3$ (resp. $a_1$ and $a_3$, $a_1$ and $a_2$), then $E_1 = E_4 = E_2$ in  $\persistsimp(\Gg'_3, a_1)$, $E_1=E_5 = E_2$ in $\persistsimp(\Gg'_3,a_2)$, and $E_1=E_3 = E_2$ in $\persistsimp(\Gg'_3,a_3)$. In addition, $\persistsimp(\Gg'_3, a_4)$ is obtained from $\Gg'_3$ by  contracting $a_1,a_2,a_3$. So $E_1 = E_3 = E_4 = E_5 = E_2$ in $\persistsimp(\Gg'_3, a_4)$.  Therefore, $\varphi_3 \models E_1 = E_2 \wedge \ltrue$.
+%
+\item  For $\varphi_4$,  both $\persistsimp(\Gg'_4, a_1)$ and $\persistsimp(\Gg'_3, a_2)$ are obtained from $\Gg'_4$ by contracting $a_3$ and $a_4$, then $E_1 = E_5 = E_2$ in  $\persistsimp(\Gg'_4, a_1)$ and $\persistsimp(\Gg'_4, a_2)$. In addition, both $\persistsimp(\Gg'_4, a_3)$ and $\persistsimp(\Gg'_4, a_4)$ are obtained from $\Gg'_4$ by  contracting $a_1,a_2$. So $E_1 = E_3 = E_4 = E_2$ in $\persistsimp(\Gg'_4, a_3)$ and $\persistsimp(\Gg'_4, a_4)$.  Therefore, $\varphi_4 \models E_1 = E_2 \wedge \ltrue$.
+\end{itemize}
+\end{example}
+
 
 \medskip
 
