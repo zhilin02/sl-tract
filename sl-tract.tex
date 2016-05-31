@@ -494,6 +494,7 @@ The satisfiability problem of SLID[$\dllseg$] formulae can be decided in polynom
 
 
 
+
 Without loss of generality, in this section, we assume that all the SLID[$\dllseg$] formulae $\varphi = \Pi \wedge \Sigma$ satisfy that $\Sigma$ contains no $\slemp$ atoms. For SLID[$\dllseg$] formulae $\varphi = \Pi \wedge \Sigma$ such that $\Sigma$ contains $\slemp$ atoms, if $\Sigma = \slemp \sep \dots \sep \slemp$, then the satisfiability of $\varphi$ is reduced to that of $\Pi$, otherwise, $\slemp$ can be removed from $\Sigma$, without affecting the satisfiability of $\varphi$. Moreover, we assume that $\Pi$ in $\varphi$ is \emph{saturated} in the sense that for each pair of distinct points-to atoms $E \mapsto [\dots]$ and $E' \mapsto [\dots]$, it holds that $E \neq E'$ is a conjunct of $\Pi$.
 
 Before presenting the proof of Theorem~\ref{thm-sat-dllseg}, let us get some idea of the satisfiability problem by some examples.
@@ -547,27 +548,69 @@ For any given SLID$[\dllseg]$ formula $\varphi = \Pi \wedge \Sigma$ such that $\
 \end{itemize}
 We call the arcs labeled by $\fnext$ and $\lseg^\fnext$ as forward arcs and the arcs labeled by $\fprev$ and $\lseg^\fprev$ as backward arcs.
 \end{definition}
+Let $\Gg$ be an SLID[$\dllseg$] graph and $[E]$ be a node in $\Gg$. Then we use $\Ee_\Gg([E])$ to denote the set of directed arcs that are reachable from $[E]$. For an atom $a_i$, if there are arcs associated with $a_i$ in $\Gg$, let $\Ee_\Gg(a_i)$ denote the set $\{e,e'\}$ such that $e \neq e'$ and $\atom(e)=\atom(e')=a_i$, otherwise, $\Ee_\Gg(a_i) = \emptyset$. In addition, we use $\Ee^{atm}_{\Gg}([E])$ to denote $\bigcup \limits_{e \in \Ee_\Gg([E])} \Ee_\Gg(\atom(e))$. For an atom $a_i$, 
+%such that the two arcs associated with $a_i$ are out of $[E']$ and $[E'']$ respectively, then let $\Ee^{atm}_{\Gg}(a_i)$ denote $\Ee^{atm}_\Gg([E']) \cup \Ee^{atm}_\Gg([E''])$, moreover, 
+let $\Gg-a_i$ denote the graph obtained from $\Gg$ by removing all the arcs in $\Ee_\Gg(a_i)$. For a directed arc $e$ from $[E]$ to $[F]$, $[E]$ and $[F]$ are called the source and destination node of $e$ respectively.
 
-\begin{definition}[{Arcs reachable from $[E]$ through $e$}]
-Let $\Gg$ be an SLID[$\dllseg$] graph, $[E]$ be a node in $\Gg$, and $e$ be an arc out of $[E]$. Then an arc $e' \in \Ee([E])$ is said to be reachable from $[E]$ through $e$ if every path from $[E]$ to $e'$ goes through $e$. Let $\Ee_{e}([E])$ denote the set of arcs reachable from $[E]$ through $e$, with $e$ itself included.
-\end{definition}
-
-\begin{example}
-Suppose $\varphi:= \ltrue \wedge \dllseg(E_1, E_5; E_2, E_1) \sep \dllseg(E_1, E_3; E_4, E_2) \sep \dllseg(E_4, E_3; E_3, E_5) \sep \dllseg(E_3, E_7; E_6, E_8)$. Let $e_1, e_2, e_3$ represent $\lseg^{\fnext}(E_1; E_2)$, $\lseg^\fnext(E1; E_4)$, and $\lseg^\fprev(E_1; E_5)$ respectively. Then $\Ee_{e_1}([E_1])=\{\lseg^{\fnext}(E_1; E_2), \lseg^{\fprev}(E_2; E_3)\}$, $\Ee_{e_2}([E_1])=\{\lseg^\fnext(E_1; E_4), \lseg^\fnext(E_4; E_3)\}$, and $\Ee_{e_3}([E_1])=\{\lseg^\fprev(E_1; E_5), \lseg^\fprev(E_5; E_3)\}$. 
-\end{example}
-
-Suppose $[E]$ is a node in $\Gg$ and $e$ is an arc out of $[E]$. Then $\Ee_{-e}([E])$ denotes the set of arcs that are reachable from $[E]$ in $\Gg-e$. For a spatial atom $a_i$, let $\Ee[{a_i}]$ denote the set of directed arcs $e$ such that $\atom(e) = a_i$. 
-%Let $\Ee_1$ and $\Ee_2$ be two sets of arcs. Then $\Ee_1$ and $\Ee_2$ are said to be \emph{atom-disjoint} if $\{\atom(e) \mid e \in \Ee_1\} \cap \{\atom(e) \mid e \in \Ee_2\} = \emptyset$. 
-For an atom $a_i = \dllseg(E, P; F , L)$, define $\phi_{a_i}:= E = F \wedge P = L$.
+%Let $e$ be a directed arc out of $[E]$ in $\Gg$, we use $\Ee^{atm}_{\Gg-e}([E])$  to denote the set of directed arcs that are potentially reachable in $\Gg-e$.
 
 
 \begin{definition}[Persistent set of arcs]
-Let $\Gg$ be an SLID[$\dllseg$]-graph and $\varphi_\Gg = \Pi \wedge \Sigma$. Then a set of directed arcs in $\Gg$, say $\Ee'$, is said to be \emph{persistent} if either $\Ee'$ contains a field-labeled arc, or there are two nodes $[E],[F]$ in  $\Ee'$ such that they belong to the same connected component of $\Ee'$ and there is  a $\neq$-labeled arc between $[E]$ and $[F]$.
+Let $\Gg$ be an SLID[$\dllseg$]-graph. Then a set of arcs in $\Gg$, say $\Ee'$, is said to be \emph{persistent} if either $\Ee'$ contains a field-labeled arc, or there are two nodes $[E],[F]$ in  $\Ee'$ such that they belong to the \emph{same connected component} of $\Ee'$ and there is  a $\neq$-labeled arc between $[E]$ and $[F]$.
 \end{definition}
+
+Moreover, in the following, we introduce a concept of ``persistent set of arcs with respect to an atom''.
+
+\begin{definition}[Persistent set of arcs with respect to an atom]
+Let $\Gg$ be an SLID[$\dllseg$]-graph and $a$ be a predicate atom occurring in $\Gg$. Then a set of arcs in $\Gg$, say $\Ee'$, is said to be \emph{persistent with respect to $a$} if one of the following constraints holds,
+\begin{itemize}
+\item either $\Ee'$ contains a field-labeled arc, 
+\item or there are two nodes $[E],[F]$ in  $\Ee'$ such that they belong to the \emph{same connected component} of $\Ee'$ and there is  a $\neq$-labeled arc between $[E]$ and $[F]$,
+\item or $\Ee' \cap \Ee_\Gg(a) \neq \emptyset$.
+\end{itemize}
+\end{definition}
+ 
+
+
+
+%\begin{definition}[{Arcs reachable from $[E]$ through $e$}]
+%Let $\Gg$ be an SLID[$\dllseg$] graph, $[E]$ be a node in $\Gg$, and $e$ be an arc out of $[E]$. Then an arc $e' \in \Ee([E])$ is said to be reachable from $[E]$ through $e$ if every path from $[E]$ to $e'$ goes through $e$. Let $\Ee_{e}([E])$ denote the set of arcs reachable from $[E]$ through $e$, with $e$ itself included.
+%\end{definition}
+
+%\begin{example}
+%Suppose $\varphi:= \ltrue \wedge \dllseg(E_1, E_5; E_2, E_1) \sep \dllseg(E_1, E_3; E_4, E_2) \sep \dllseg(E_4, E_3; E_3, E_5) \sep \dllseg(E_3, E_7; E_6, E_8)$. Let $e_1, e_2, e_3$ represent $\lseg^{\fnext}(E_1; E_2)$, $\lseg^\fnext(E1; E_4)$, and $\lseg^\fprev(E_1; E_5)$ respectively. Then $\Ee_{e_1}([E_1])=\{\lseg^{\fnext}(E_1; E_2), \lseg^{\fprev}(E_2; E_3)\}$, $\Ee_{e_2}([E_1])=\{\lseg^\fnext(E_1; E_4), \lseg^\fnext(E_4; E_3)\}$, and $\Ee_{e_3}([E_1])=\{\lseg^\fprev(E_1; E_5), \lseg^\fprev(E_5; E_3)\}$. 
+%\end{example}
+
+%Suppose $[E]$ is a node in $\Gg$ and $e$ is an arc out of $[E]$. Then $\Ee_{-e}([E])$ denotes the set of arcs that are reachable from $[E]$ in $\Gg-e$. For a spatial atom $a_i$, let $\Ee[{a_i}]$ denote the set of directed arcs $e$ such that $\atom(e) = a_i$. 
+%For an atom $a_i = \dllseg(E, P; F , L)$, define $\phi_{a_i}:= E = F \wedge P = L$.
+
+
 
 In the following, we present a procedure to simplify SLID[$\dllseg$]-graphs.
 Before presenting the algorithm, we introduce some notations. We say that ``contract a predicate-labeled arc $e$ from $[E]$ to $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$ in $\Gg$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs related to them) are removed.  We say that ``contract an atom $a_i$'', we mean that the two arcs associated with $a_i$ are both contracted. When we say that ``merge two nodes $[E]$ and $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. 
 
+\newcommand\persistsimp{{\sf PersistSimp}}
+
+\smallskip
+
+\noindent
+{\bf Procedure $\persistsimp(\Gg')$}.\\
+Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots a_n$.
+
+
+\noindent Repeat the following procedure until no more reductions can be done: For each $i: 1 \le i \le n$, if $a_i$ is a predicate atom such that $\Ee_{\Gg'}(a_i) \neq \emptyset$ and $\Ee^{atm}_{\Gg'-a_i}([E]) \cup \Ee^{atm}_{\Gg'-a_i}([F])$ is persistent, then contract $a_i$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_i)$.
+
+\medskip
+
+
+\noindent
+{\bf Procedure $\persistsimp(\Gg',a_i)$}.\\
+Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots a_n$, and $a_i$ is a predicate atom.
+
+
+\noindent Repeat the following procedure until no more reductions can be done: For each $j: 1 \le j \le n$ such that $j \neq i$, if $a_j$ is a predicate atom such that $\Ee_{\Gg'}(a_j) \neq \emptyset$  and $\Ee^{atm}_{\Gg'-a_j}([E]) \cup \Ee^{atm}_{\Gg'-a_j}([F])$ is persistent with respect to $a_i$, then contract $a_j$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_j)$.
+
+\smallskip
 
 
 \medskip
@@ -580,7 +623,11 @@ Before presenting the algorithm, we introduce some notations. We say that ``cont
 \item there are two field-labeled arcs out of $[E]$ such that they are associated with two different atoms.
 \end{itemize}
 %
-\item For each pair of distinct nodes $[E']$ and $[F']$, if there is a node $[E]$ satisfying the following constraints, then  merge $[E']$ and $[F']$: 
+\item Let $\Gg':=\persistsimp(\Gg')$.
+%
+\item If there is a pair of distinct nodes $[E']$ and $[F']$ such that all the arcs from $ \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$  are predicate-labeled and for each $e \in \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$, it holds $\persistsimp(\Gg', \atom(e)) \models E' = F'$, then merge $[E']$ and $[F']$. 
+
+\hide{
 \begin{itemize}
 \item there are at least two arcs out of $[E]$, let $e_1,\dots, e_k$ be an enumeration of all these arcs, 
 
@@ -595,16 +642,16 @@ Before presenting the algorithm, we introduce some notations. We say that ``cont
 \Pi \wedge \bigwedge \limits_{ i \in [k] \setminus \{i_0, i_1\} } \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E' = F'.
 \]
 \end{itemize}
+}
 %
-\item If there are a node $[E]$ and an arc $e$ out of $[E]$ such that $e \not \in \bigcup \limits_{ e' \in \Ee_{-e}([E])} \Ee[\atom(e')]$ and $\bigcup \limits_{ e' \in \Ee_{-e}([E])} \Ee[\atom(e')]$ is persistent, then contract $\atom(e)$.
 \end{enumerate}
-Note that the above procedure is nondeterministic since there may be multiple pairs of nodes $[E],[F]$ satisfying the conditions in item 2 and 3.
-Let $\Gg'$ be an graph obtained after executing the above procedure on $\Gg$.
+Note that the above procedure is nondeterministic since there may be multiple pairs of nodes $[E'],[F']$ satisfying the conditions in item 3.
+%Let $\Gg'$ be an graph obtained after executing the above procedure on $\Gg$.
 
 \medskip
 
 \begin{lemma}
-Let $\varphi$ be an SLID[$\dllseg$] formula, $\Gg$ be the graph representation of $\varphi$, and $\Gg'$ be a graph obtained from $\Gg$ by the aforementioned procedure. Then $\varphi$ is satisfiable iff $\Gg' \neq \bot$.
+Let $\varphi$ be an SLID[$\dllseg$] formula, $\Gg$ be the graph representation of $\varphi$, and $\Gg'$ be a graph obtained from $\Gg$ by the aforementioned procedure. Then $\varphi$ is satisfiable iff $\Gg' \neq \bot$. Moreover, for each pair of variables $E'$ and $F'$, $\varphi \models E' = F' \wedge \ltrue$ iff $[E']=[F']$ in $\Gg'$.
 \end{lemma}
 
 
