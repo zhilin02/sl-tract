@@ -697,7 +697,7 @@ Let $\varphi$ be an SLID[$\dllseg$] formula, $\Gg$ be the graph representation o
 
 \begin{proof}
 \ \\
-\noindent ``{\it Only if}'' direction: Easy.
+\noindent ``{\it Only if}'' direction: Relatively easy.
 
 \smallskip
 
@@ -705,10 +705,32 @@ Let $\varphi$ be an SLID[$\dllseg$] formula, $\Gg$ be the graph representation o
 
 Suppose $\simp(\Gg) \neq \bot$. Our goal is to construct a model of $\varphi$.
 
-select a maximal path in $\simp(\Gg)$, materialize one arc, simplify the graph, repeat until all the arcs in the path are materialized. then select another uncovered maximal path, until all the arcs are covered.
+Initially, let $\Gg':=\simp(\Gg)$. Repeat the following procedure until there are no predicate-labeled arcs in $\Gg'$. 
+\begin{enumerate}
+\item Select a predicate atom $\anatom$ such that the two arcs of $\Gg'$ associated with $\anatom$ are the forward arc $e_1$ and the backward arc $e_2$, whose source and destination nodes are $E'_1, F'_1$ and $E'_2, F'_2$ respectively. 
 
-correctness: in each simplification, impossible to get $\bot$.
+\begin{itemize}
+\item If $[E'_1] = [E'_2]$, then relabel $e_1,e_2$ with $\fnext$ and $\fprev$ respectively. 
+\item Otherwise, replace $e_1$ with $[E'_1] \aedge{\fnext} [E'_2] \aedge{\fnext} [F'_1]$ and $e_2$ with $[E'_2] \aedge{\fprev} [E'_1] \aedge{\fprev} [F'_2]$ respectively.
+\end{itemize}
 
+\item Let $\Gg':=\persistsimp(\Gg')$.
+\end{enumerate}
+
+To guarantee that the above procedure indeed constructs a model of $\varphi$ in the end, it is necessary to show that $\persistsimp(\Gg') \neq \bot$ in the second step.
+
+To the contrary, suppose that during some execution of the loop, it happens that $\Gg' \neq \bot$ but $\persistsimp(\Gg') = \bot$, where $\Gg'$ is the graph before executing the second step. From the description of $\persistsimp(\cdot)$, we know that this can only happen if  one of the following holds,
+\begin{itemize}
+\item there are two nodes  $[E']$ and $[F']$ of $\Gg'$ such that $E',F'$ belong to the same node in $\persistsimp(\Gg')$, and there is an undirected arc between $[E']$ and $[F']$ in $\Gg'$,
+
+\item in $\persistsimp(\Gg')$, there are a node $[E']$ and two arcs out of $[E']$ labeled by $\fnext$.
+\end{itemize}
+
+\zhilin{Just a try. The arguments in the following two paragraphs are still quite imprecise.}
+
+For the former situation, there must be an ancestor of $[E'_1]$ or $[E'_2]$, say $[E'_0]$, such that $[E']$ and $[F']$ are reachable from $[E'_0]$ in $\Gg'$. This would imply that there is an arc $e_0$ from $[E'_0]$ to $[F'_0]$ such that $[F'_0]$ is an ancestor of $[E'_1]$ or $[E'_2]$, and $\Ee_{\Gg'-\atom(e_0)}([E'_0])$ is persistent. Therefore, $e_0$ can be contracted in $\Gg'$, which contradicts the fact that no contractions of arcs are possible in $\Gg'$.
+
+For the latter situation, let $e_1,e_2$ be two arcs of $\Gg'$ corresponding to the $\fnext$-labeled arcs out of $[E']$, then there must be a node $[E'_0]$ such that both $e_1$ and $e_2$ are reachable from $[E'_0]$ in $\Gg'$ and $E'_0, E'$ belong to the same node in $\persistsimp(\Gg')$. This would imply that there is an arc $e_0$ from $[E'_0]$ to $[F'_0]$ such that $[F'_0]$ is an ancestor of $[E'_1]$ or $[E'_2]$, and $\Ee_{\Gg'-\atom(e_0)}([E'_0])$ is persistent. Therefore, $e_0$ can be contracted in $\Gg'$, which contradicts the fact that no contractions of arcs are possible in $\Gg'$.
 \qed
 \end{proof}
 
