@@ -526,6 +526,7 @@ is unsatisfiable: $E_1 \neq E_5$ implies that $\dllseg(E_1, F_6; E_5, F_7)$ corr
 \end{itemize}
 \end{example}
 
+For each variable $E$, let $[E]$ denote the equivalence class of $\sim_\Pi$ containing $E$.
 
 \newcommand\couple{\mathsf{Cpl}}
 
@@ -591,61 +592,75 @@ Before presenting the algorithm, we introduce some notations. We say that ``cont
 
 \newcommand\persistsimp{{\sf PersistSimp}}
 
-\smallskip
+\newcommand\simp{{\sf Simp}}
 
-\noindent
-{\bf Procedure $\persistsimp(\Gg')$}.\\
-Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$.
-
-
-\noindent Repeat the following procedure until no more reductions can be done: For each $i: 1 \le i \le n$, if $a_i$ is a predicate atom such that $\Ee_{\Gg'}(a_i) \neq \emptyset$ and $\Ee^{atm}_{\Gg'-a_i}([E]) \cup \Ee^{atm}_{\Gg'-a_i}([F])$ is persistent, then contract $a_i$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_i)$.
-
-\medskip
-
-
-\noindent
-{\bf Procedure $\persistsimp(\Gg',a_i)$}.\\
-Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$, and $a_i$ is a predicate atom.
-
-
-\noindent Repeat the following procedure until no more reductions can be done: For each $j: 1 \le j \le n$ such that $j \neq i$, if $a_j$ is a predicate atom such that $\Ee_{\Gg'}(a_j) \neq \emptyset$  and $\Ee^{atm}_{\Gg'-a_j}([E]) \cup \Ee^{atm}_{\Gg'-a_j}([F])$ is persistent with respect to $a_i$, then contract $a_j$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_j)$.
+\newcommand\locinconsist{{\sf LocInconsist}}
 
 \smallskip
 
-
-\medskip
-\noindent Let $\Gg':=\Gg$. Repeat the following procedure until no more reductions can be done.
-\begin{enumerate}
-\item If there is a node $[E]$ satisfying one of the following conditions, then let $\Gg':=\bot$ and exit the loop,
+\noindent
+{\bf Procedure $\locinconsist(\Gg')$}.\\
+Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$.\\
+%
+If there is a node $[E]$ satisfying one of the following conditions, then return $true$.
 \begin{itemize}
 \item there is an undirected arc from $[E]$ to itself,
 %
 \item there are two field-labeled arcs out of $[E]$ such that they are associated with two different atoms.
 \end{itemize}
-%
-\item Let $\Gg':=\persistsimp(\Gg')$.
-%
-\item If there is a pair of distinct nodes $[E']$ and $[F']$ such that $[E']$ and $[F']$ belong to the same connected component of $ \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$,  all the arcs from $ \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$  are predicate-labeled, and for each $e \in \Ee^{atm}_{\Gg'}([E']) \cup \Ee^{atm}_{\Gg'}([F'])$, it holds that $E', F'$ belong to the same node in $\persistsimp(\Gg', \atom(e))$, then merge $[E']$ and $[F']$. 
+Return $false$.
 
-\hide{
+\medskip
+
+\noindent
+{\bf Procedure $\persistsimp(\Gg')$}.\\
+Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$.
+
+\noindent Repeat the following procedure until no more reductions can be done.
+\begin{enumerate}
+\item If $\locinconsist(\Gg') = true$, then return $\bot$.
+
+\item For each $i: 1 \le i \le n$, if $a_i$ is a predicate atom such that $\Ee_{\Gg'}(a_i) \neq \emptyset$ and $\Ee^{atm}_{\Gg'-a_i}([E]) \cup \Ee^{atm}_{\Gg'-a_i}([F])$ is persistent, then contract $a_i$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_i)$.
+\end{enumerate}
+Return $\Gg'$.
+\medskip
+
+\noindent
+{\bf Procedure $\persistsimp(\Gg',a_i)$}.\\
+Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$, and $a_i$ is a predicate atom.
+
+\noindent Repeat the following procedure until no more reductions can be done: 
+\begin{enumerate}
+\item If $\locinconsist(\Gg') = true$, then return $\bot$.
+
+\item For each $j: 1 \le j \le n$ such that $j \neq i$, if $a_j$ is a predicate atom such that $\Ee_{\Gg'}(a_j) \neq \emptyset$  and $\Ee^{atm}_{\Gg'-a_j}([E]) \cup \Ee^{atm}_{\Gg'-a_j}([F])$ is persistent with respect to $a_i$, then contract $a_j$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_j)$.
+\end{enumerate}
+Return $\Gg'$.
+
+
+\medskip
+\noindent
+{\bf Procedure} ${\sf Simp}(\Gg)$.\\
+Let $\Gg':=\Gg$. Repeat the following procedure until no more reductions can be done.
+\begin{enumerate}
+\item If $\locinconsist(\Gg') = true$, then return $\bot$.
+%
+\item Let $\Gg':=\persistsimp(\Gg')$. If $\locinconsist(\Gg') = true$, then return $\bot$.
+%
+\item If there is a pair of distinct nodes $[E']$ and $[F']$ such that 
 \begin{itemize}
-\item there are at least two arcs out of $[E]$, let $e_1,\dots, e_k$ be an enumeration of all these arcs, 
-
-\item if $\Pi \wedge \bigwedge \limits_{i \in [k]} \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')}$ is satisfiable, then 
-\[\Pi \wedge \bigwedge \limits_{i \in [k]} \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E'=F',\]
-%
-\item for each $a_j \in \bigcup \limits_{i \in [k]} \bigcup \limits_{e' \in \Ee_{e_i}([E])} \{\atom(e')\}$, if there is exactly one arc in $\bigcup \limits_{i \in [k] }  \Ee_{e_i}([E])$ associated with $a_j$, let $i_0$ be the index satisfying that $\Ee_{e_{i_0}}([E])$ contains an arc associated with $a_j$, then 
-\[\Pi \wedge \bigwedge \limits_{i \in [k]  \setminus\{i_0\} } \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E' = F',\]
-%
-\item for each $a_j \in \bigcup \limits_{ i \in [k]} \bigcup \limits_{e' \in \Ee_{e_i}([E])} \{\atom(e')\}$, if there are two arcs in $\bigcup \limits_{ i \in [k] }  \Ee_{e_i}([E])$ associated with $a_j$, let $i_0, i_1$ be the two indices satisfying that both $\Ee_{e_{i_0}}([E])$ and $\Ee_{e_{i_1}}([E])$ contain an arc associated with $a_j$, then $k > 2$ and 
-\[
-\Pi \wedge \bigwedge \limits_{ i \in [k] \setminus \{i_0, i_1\} } \bigwedge \limits_{e' \in \Ee_{e_i}([E])} \phi_{\atom(e')} \models E' = F'.
-\]
+\item $\Ee_{\Gg'}([E']) \cap \Ee_{\Gg'}([F']) \neq \emptyset$, 
+\item all the arcs from $ \Ee_{\Gg'}([E']) \cup \Ee_{\Gg'}([F'])$  are predicate-labeled, 
+\item and for each $e \in \Ee_{\Gg'}([E']) \cup \Ee_{\Gg'}([F'])$ such that $\persistsimp(\Gg', \atom(e)) \neq \bot$,  it holds that $[E']_e =[F']_e$, where $[E']_e$ and $[F']_e$ are the nodes of  $\persistsimp(\Gg', \atom(e))$ containing $E'$ and $F'$ respectively, 
 \end{itemize}
-}
+then merge $[E']$ and $[F']$. 
 %
 \end{enumerate}
-Note that the above procedure is nondeterministic since there may be multiple pairs of nodes $[E'],[F']$ satisfying the conditions in item 3.
+Return $\Gg'$.
+
+\medskip
+
+%Note that the above procedure is nondeterministic since there may be multiple pairs of nodes $[E'],[F']$ satisfying the conditions in item 3.
 %Let $\Gg'$ be an graph obtained after executing the above procedure on $\Gg$.
 
 \begin{figure}[htbp]
@@ -677,9 +692,25 @@ Suppose $\varphi_1,\varphi_2,\varphi_3,\varphi_4$ are the SLID[$\dllseg$] formul
 \medskip
 
 \begin{lemma}
-Let $\varphi$ be an SLID[$\dllseg$] formula, $\Gg$ be the graph representation of $\varphi$, and $\Gg'$ be a graph obtained from $\Gg$ by the aforementioned procedure. Then $\varphi$ is satisfiable iff $\Gg' \neq \bot$. Moreover, for each pair of variables $E'$ and $F'$, $\varphi \models E' = F' \wedge \ltrue$ iff $[E']=[F']$ in $\Gg'$.
+Let $\varphi$ be an SLID[$\dllseg$] formula, $\Gg$ be the graph representation of $\varphi$. Then $\varphi$ is satisfiable iff $\simp(\Gg) \neq \bot$. Moreover, for each pair of variables $E'$ and $F'$, $\varphi \models E' = F' \wedge \ltrue$ iff $[E']=[F']$ in $\simp(\Gg)$.
 \end{lemma}
 
+\begin{proof}
+\ \\
+\noindent ``{\it Only if}'' direction: Easy.
+
+\smallskip
+
+\noindent ``{\it If}'' direction:
+
+Suppose $\simp(\Gg) \neq \bot$. Our goal is to construct a model of $\varphi$.
+
+select a maximal path in $\simp(\Gg)$, materialize one arc, simplify the graph, repeat until all the arcs in the path are materialized. then select another uncovered maximal path, until all the arcs are covered.
+
+correctness: in each simplification, impossible to get $\bot$.
+
+\qed
+\end{proof}
 
 \section{Entailment}
 
