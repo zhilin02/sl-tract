@@ -132,7 +132,7 @@ In this paper, we focus on separation logic with an inductive definition $P$ (ab
 \Sigma & ::=& \slemp\mid  E \mapsto \rho \mid P(E,\vec{E'}; F, \vec{F'}; \vec{B}) \mid \Sigma * \Sigma,
 \end{array}
 \]
-where $\rho$ is a tuple of elements from $\Ff \times \lvars$ and $P(E,\vec{E'}; F, \vec{F'})$ is an inductive predicate whose definition will be specified later. The formulae $\Pi$ and $\Sigma$ are called the \emph{pure} and \emph{spatial} formulae respectively. Atomic formulae of the form $E \mapsto \rho$ and $P(E,\vec{E'}; F, \vec{F'}; \vec{B})$ are called the \emph{points-to} and \emph{predicate} atoms respectively. The variable $E$ in a spatial atom $a=E \mapsto \rho$ or $a=P(E,\vec{E'}; F, \vec{F'}; \vec{B})$ is called the \emph{root} of the atom, denoted by $\atomroot(a)$.
+where $\rho$ is a tuple of elements from $\Ff \times \lvars$ and $P(E,\vec{E'}; F, \vec{F'})$ is an inductive predicate whose definition will be specified later. The formulae $\Pi$ and $\Sigma$ are called the \emph{pure} and \emph{spatial} formulae respectively. Atomic formulae of the form $E \mapsto \rho$ and $P(E,\vec{E'}; F, \vec{F'}; \vec{B})$ are called the \emph{points-to} and \emph{predicate} atoms respectively. The variable $E$ in a spatial atom $\anatom=E \mapsto \rho$ or $a=P(E,\vec{E'}; F, \vec{F'}; \vec{B})$ is called the \emph{root} of the atom, denoted by $\atomroot(\anatom)$.
 
 %The predicate $th$ carries two (location) fields, i.e., left ($\slleft$) and right ($\slright$), denoting the left and the right branch of the binary tree under consideration.
 
@@ -290,16 +290,16 @@ For any given SLID$[\lseg]$ formula $\varphi$, we define a graph
 \begin{itemize}
 \item for each pair $(E, F)$ such that $E \neq F$ occurs in $\Pi$, there is an \emph{undirected} arc $e$ between $[E]$ and $[F]$ --- we set $\Ll_{\varphi}(e) =\neq$,
 %
-\item for each pair $(E,F)$ such that $\Sigma$ contains a \emph{points-to atom} $a_i=E \mapsto (\fnext,F)$, there is a \emph{directed} arc $e$ from $[E]$ to $[F]$ --- this arc is said to be \emph{field-labeled} and we write $\Ll_{\varphi}(e)= \fnext$;
+\item for each pair $(E,F)$ such that $\Sigma$ contains a \emph{points-to atom} $\anatom_i=E \mapsto (\fnext,F)$, there is a \emph{directed} arc $e$ from $[E]$ to $[F]$ --- this arc is said to be \emph{field-labeled} and we write $\Ll_{\varphi}(e)= \fnext$;
 %\tl{$f_0(\rho')$ here has nothing to do with function? maybe write $f_0[\rho']$}
 
 %
-\item and for each pair $(E,F)$ such that $\Sigma$ contains a \emph{predicate atom} $a_i=\lseg(E;F)$, there is a \emph{directed} arc $e$ from $[E]$ to $[F]$  --- this arc is said to be \emph{predicate-labeled}  and we write $\Ll_{\varphi}(e)= \lseg$.
+\item and for each pair $(E,F)$ such that $\Sigma$ contains a \emph{predicate atom} $\anatom_i=\lseg(E;F)$, there is a \emph{directed} arc $e$ from $[E]$ to $[F]$  --- this arc is said to be \emph{predicate-labeled}  and we write $\Ll_{\varphi}(e)= \lseg$.
 \end{itemize}
 \end{itemize}
 \end{definition}
 
-From the construction, each directed arc $e$ corresponds to a unique atom $a_i$ in $\Sigma$. Let $i(e)$ denote the index $i$ of the atom corresponding to $e$.
+From the construction, each directed arc $e$ corresponds to a unique atom $\anatom_i$ in $\Sigma$. Let $i(e)$ denote the index $i$ of the atom corresponding to $e$.
 
 \begin{example}
 ??
@@ -541,15 +541,15 @@ For any given SLID$[\dllseg]$ formula $\varphi = \Pi \wedge \Sigma$ such that $\
 \begin{itemize}
 \item for each pair $(E, F)$ such that $E \neq F$ occurs in $\Pi$, there is an \emph{undirected} arc $e$ between $[E]$ and $[F]$ --- we set $\Ll_{\varphi}(e) =\neq$,
 %
-\item for each pair $(E,F)$ such that $\Sigma$ contains a \emph{points-to atom} $a_i=E \mapsto [(\fnext,F), (\fprev,P)]$, there are a \emph{directed} arc $e$ from $[E]$ to $[F]$ labeled by $\fnext$ and a directed arc $e'$ from $[E]$ to $[P]$ labeled by $\fprev$ --- these two arcs are said to be \emph{field-labeled} and we write $\Ll_{\varphi}(e)= (\fnext,a_i)$ and $\Ll_{\varphi}(e')= (\fprev,a_i)$ respectively, moreover, we say that $a_i$ is the atom associated with $e$ and $e'$, denoted by $\atom(e)$ and $\atom({e'})$;
+\item for each pair $(E,F)$ such that $\Sigma$ contains a \emph{points-to atom} $\anatom_i=E \mapsto [(\fnext,F), (\fprev,P)]$, there are a \emph{directed} arc $e$ from $[E]$ to $[F]$ labeled by $\fnext$ and a directed arc $e'$ from $[E]$ to $[P]$ labeled by $\fprev$ --- these two arcs are said to be \emph{field-labeled} and we write $\Ll_{\varphi}(e)= (\fnext,a_i)$ and $\Ll_{\varphi}(e')= (\fprev,a_i)$ respectively, moreover, we say that $a_i$ is the atom associated with $e$ and $e'$, denoted by $\atom(e)$ and $\atom({e'})$;
 
 %
-\item and for each pair $(E,F)$ such that $\Sigma$ contains a \emph{predicate atom} $a_i=\dllseg(E, P;F, L)$, there are an \emph{directed} arc $e$ from $[E]$ to $[F]$ labeled by $\lseg^\fnext$ and a directed arc $e'$ from $[L]$ to $[P]$ labeled by $\lseg^\fprev$  --- these two arcs are said to be \emph{predicate-labeled}  and we write $\Ll_{\varphi}(e)= (\lseg^\fnext,a_i)$ and $\Ll_\varphi(e')=(\lseg^\fprev, a_i)$, moreover, we say that $a_i$ is the atom associated with $e$ and $e'$, denoted by $\atom(e)$ and $\atom({e'})$. 
+\item and for each pair $(E,F)$ such that $\Sigma$ contains a \emph{predicate atom} $\anatom_i=\dllseg(E, P;F, L)$, there are an \emph{directed} arc $e$ from $[E]$ to $[F]$ labeled by $\lseg^\fnext$ and a directed arc $e'$ from $[L]$ to $[P]$ labeled by $\lseg^\fprev$  --- these two arcs are said to be \emph{predicate-labeled}  and we write $\Ll_{\varphi}(e)= (\lseg^\fnext,a_i)$ and $\Ll_\varphi(e')=(\lseg^\fprev, a_i)$, moreover, we say that $\anatom_i$ is the atom associated with $e$ and $e'$, denoted by $\atom(e)$ and $\atom({e'})$. 
 \end{itemize}
 \end{itemize}
 We call the arcs labeled by $\fnext$ and $\lseg^\fnext$ as forward arcs and the arcs labeled by $\fprev$ and $\lseg^\fprev$ as backward arcs.
 \end{definition}
-Let $\Gg$ be an SLID[$\dllseg$] graph and $[E]$ be a node in $\Gg$. Then we use $\Ee_\Gg([E])$ to denote the set of directed arcs that are reachable from $[E]$. For an atom $a_i$, if there are arcs associated with $a_i$ in $\Gg$, let $\Ee_\Gg(a_i)$ denote the set $\{e,e'\}$ such that $e \neq e'$ and $\atom(e)=\atom(e')=a_i$, otherwise, $\Ee_\Gg(a_i) = \emptyset$. In addition, we use $\Ee^{atm}_{\Gg}([E])$ to denote $\bigcup \limits_{e \in \Ee_\Gg([E])} \Ee_\Gg(\atom(e))$. For an atom $a_i$, 
+Let $\Gg$ be an SLID[$\dllseg$] graph and $[E]$ be a node in $\Gg$. Then we use $\Ee_\Gg([E])$ to denote the set of directed arcs that are reachable from $[E]$ and $\Ee^{-1}_\Gg([E])$ denote the set of directed arcs from $[E']$ to $[F']$ such that $[E]$ is reachable from $[F']$. For an atom $\anatom_i$, if there are arcs associated with $a_i$ in $\Gg$, let $\Ee_\Gg(\anatom_i)$ denote the set $\{e,e'\}$ such that $e \neq e'$ and $\atom(e)=\atom(e')=\anatom_i$, otherwise, $\Ee_\Gg(\anatom_i) = \emptyset$. In addition, we use $\Ee^{atm}_{\Gg}([E])$ to denote $\bigcup \limits_{e \in \Ee_\Gg([E])} \Ee_\Gg(\atom(e))$. For an atom $\anatom_i$, 
 %such that the two arcs associated with $a_i$ are out of $[E']$ and $[E'']$ respectively, then let $\Ee^{atm}_{\Gg}(a_i)$ denote $\Ee^{atm}_\Gg([E']) \cup \Ee^{atm}_\Gg([E''])$, moreover, 
 let $\Gg-a_i$ denote the graph obtained from $\Gg$ by removing all the arcs in $\Ee_\Gg(a_i)$. For a directed arc $e$ from $[E]$ to $[F]$, $[E]$ and $[F]$ are called the source and destination node of $e$ respectively.
 
@@ -563,7 +563,7 @@ Let $\Gg$ be an SLID[$\dllseg$]-graph. Then a set of arcs in $\Gg$, say $\Ee'$, 
 Moreover, in the following, we introduce a concept of ``persistent set of arcs with respect to an atom''.
 
 \begin{definition}[Persistent set of arcs with respect to an atom]
-Let $\Gg$ be an SLID[$\dllseg$]-graph and $a$ be a predicate atom occurring in $\Gg$. Then a set of arcs in $\Gg$, say $\Ee'$, is said to be \emph{persistent with respect to $a$} if one of the following constraints holds,
+Let $\Gg$ be an SLID[$\dllseg$]-graph and $\anatom$ be a predicate atom occurring in $\Gg$. Then a set of arcs in $\Gg$, say $\Ee'$, is said to be \emph{persistent with respect to $\anatom$} if one of the following constraints holds,
 \begin{itemize}
 \item either $\Ee'$ contains a field-labeled arc, 
 \item or there are two nodes $[E],[F]$ in  $\Ee'$ such that they belong to the \emph{same connected component} of $\Ee'$ and there is  a $\neq$-labeled arc between $[E]$ and $[F]$,
@@ -588,7 +588,7 @@ Let $\Gg$ be an SLID[$\dllseg$]-graph and $a$ be a predicate atom occurring in $
 
 
 In the following, we present a procedure to simplify SLID[$\dllseg$]-graphs.
-Before presenting the algorithm, we introduce some notations. We say that ``contract a predicate-labeled arc $e$ from $[E]$ to $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$ in $\Gg$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs related to them) are removed.  We say that ``contract an atom $a_i$'', we mean that the two arcs associated with $a_i$ are both contracted. When we say that ``merge two nodes $[E]$ and $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. 
+Before presenting the algorithm, we introduce some notations. We say that ``contract a predicate-labeled arc $e$ from $[E]$ to $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$ in $\Gg$, except $e$, and the node $[E]$ and $[F]$ (as well as the arcs related to them) are removed.  We say that ``contract an atom $\anatom_i$'', we mean that the two arcs associated with $a_i$ are both contracted. When we say that ``merge two nodes $[E]$ and $[F]$ in $\Gg$'', we mean that a new node $[E] \cup [F]$ is created, $[E] \cup [F]$ inherits all the (undirected and directed) arcs related to $[E]$ and $[F]$, and the node $[E]$ and $[F]$ are removed. 
 
 \newcommand\persistsimp{{\sf PersistSimp}}
 
@@ -600,7 +600,7 @@ Before presenting the algorithm, we introduce some notations. We say that ``cont
 
 \noindent
 {\bf Procedure $\locinconsist(\Gg')$}.\\
-Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$.\\
+Input: A graph $\Gg'$.\\
 %
 If there is a node $[E]$ satisfying one of the following conditions, then return $true$.
 \begin{itemize}
@@ -614,34 +614,85 @@ Return $false$.
 
 \noindent
 {\bf Procedure $\persistsimp(\Gg')$}.\\
-Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$.
+Input: A graph $\Gg'$.
 
 \noindent Repeat the following procedure until no more reductions can be done.
 \begin{enumerate}
 \item If $\locinconsist(\Gg') = true$, then return $\bot$.
 
-\item For each $i: 1 \le i \le n$, if $a_i$ is a predicate atom such that $\Ee_{\Gg'}(a_i) \neq \emptyset$ and $\Ee^{atm}_{\Gg'-a_i}([E]) \cup \Ee^{atm}_{\Gg'-a_i}([F])$ is persistent, then contract $a_i$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_i)$.
+\item For each $i: 1 \le i \le n$, if $\anatom_i$ is a predicate atom such that $\Ee_{\Gg'}(\anatom_i) \neq \emptyset$ and $\Ee^{atm}_{\Gg'-\anatom_i}([E]) \cup \Ee^{atm}_{\Gg'-\anatom_i}([F])$ is persistent, then contract $\anatom_i$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(\anatom_i)$.
 \end{enumerate}
 Return $\Gg'$.
 \medskip
 
+We say that a graph $\Gg'$ is \emph{persistence-irredundant} if $\persistsimp(\Gg')=\Gg'$.
+
+%We state a property of $\persistsimp(\Gg')$.
+\hide{
+\begin{proposition}
+Suppose $\Gg'$ is persistence-irredundant, $e$ is an arc from $[E']$ to $[F']$ in $\Gg'$ such that $\Ee_{\Gg'}([F'])$ is persistent, $e \not \in \Ee_{\Gg'}([F'])$, $e'$ is another arc out of $[E']$, and $\atom(e) \neq \atom(e')$. Let $e'' \neq e'$ be an arc such that  $\atom(e'')=\atom(e')$. Then $e'' \in \Ee_{\Gg'}([F'])$.
+\end{proposition}
+
+\begin{proof}
+To the contrary, suppose $e'' \not\in \Ee_{\persistsimp(\Gg')}([F'])$. 
+
+Since $e\not \in \Ee_{\persistsimp(\Gg')}([F'])$, we know that $e', e'' \not \in \Ee_{\persistsimp(\Gg')}([F'])$. Therefore, each arc from $\Ee_{\persistsimp(\Gg')}([F'])$ belongs to $\persistsimp(\Gg')-\atom(e')$. This implies that $\Ee_{\persistsimp(\Gg')-\atom(e')}([E'])$ is persistent and $\atom(e')$ can be contracted in $\persistsimp(\Gg')$, a contradiction to the fact that no more contractions are possible in $\persistsimp(\Gg')$. \qed
+\end{proof}
+}
+
+\medskip
+
 \noindent
-{\bf Procedure $\persistsimp(\Gg',a_i)$}.\\
-Input: $\Gg'$ is the graph obtained from $\varphi = \Pi \wedge \Sigma$, where $\Sigma=a_1 \sep \dots \sep a_n$, and $a_i$ is a predicate atom.
+{\bf Procedure $\locinconsist(\Gg', \anatom_i)$}.\\
+Input: A graph $\Gg'$  and a predicate atom $\anatom_i$.\\
+%
+If there is a node $[E]$ satisfying one of the following conditions, then return $true$.
+\begin{itemize}
+\item there is an undirected arc from $[E]$ to itself,
+%
+\item there are two arcs out of $[E]$ such that they are associated with two different atoms and each of them is either an arc associated with $\anatom_i$ or a field-labeled arc.
+\end{itemize}
+Return $false$.
+
+\medskip
+
+
+\noindent
+{\bf Procedure $\persistsimp(\Gg', \anatom_i)$}.\\
+Input: A graph $\Gg'$ and a predicate atom $\anatom_i$.
 
 \noindent Repeat the following procedure until no more reductions can be done: 
 \begin{enumerate}
-\item If $\locinconsist(\Gg') = true$, then return $\bot$.
+\item If $\locinconsist(\Gg', \anatom_i) = true$, then return $\bot$.
 
-\item For each $j: 1 \le j \le n$ such that $j \neq i$, if $a_j$ is a predicate atom such that $\Ee_{\Gg'}(a_j) \neq \emptyset$  and $\Ee^{atm}_{\Gg'-a_j}([E]) \cup \Ee^{atm}_{\Gg'-a_j}([F])$ is persistent with respect to $a_i$, then contract $a_j$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(a_j)$.
+\item For each $j: 1 \le j \le n$ such that $j \neq i$, if $\anatom_j$ is a predicate atom such that $\Ee_{\Gg'}(\anatom_j) \neq \emptyset$  and $\Ee^{atm}_{\Gg'-a_j}([E]) \cup \Ee^{atm}_{\Gg'-\anatom_j}([F])$ is persistent with respect to $\anatom_i$, then contract $\anatom_j$, where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg'}(\anatom_j)$.
 \end{enumerate}
 Return $\Gg'$.
 
-
 \medskip
+
+Let $\Gg'$ be a persistence-irredundant graph, $\anatom_i$ be a predicate atom such that $\Ee_{\Gg'}(a_i) \neq \emptyset$,  and $[E_1]$ and $[E_2]$ be the source nodes of the two arcs in $\Ee_{\Gg'}(\anatom_i)$.  Then an atom $a_j$ with $j \neq i$ is said to be \emph{contractable with respect to $\anatom_i$} if  there are $r=1,2$ and a path $\pi$ from some ancestor of $[E_r]$, say $[E']$,  to $[F']$, such that the last arc of $\pi$ is an arc associated with $\anatom_j$, and $[E_r]$ is reachable from $[E']$ in $\Gg'-\{\atom(e) \mid e \in \pi\}$.
+
+\begin{proposition}\label{prop-simp-atom}
+Let $\Gg'$ be a persistence-irredundant graph, $\anatom_i$ be a predicate atom such that $\Ee_{\Gg'}(\anatom_i) \neq \emptyset$. If $\persistsimp(\Gg', \anatom_i) \neq \bot$, then $\persistsimp(\Gg', \anatom_i)$ is obtained from $\Gg'$ by contracting all the atoms that are contractable with respect to $\anatom_i$.
+\end{proposition}
+
+\begin{proof}
+Let $[E_1]$ and $[E_2]$ be the source nodes of the two arcs in $\Ee_{\Gg'}(\anatom_i)$.
+
+At first, we observe that if an atom $\anatom_j$ is contractable with respect to $\anatom_i$, then $\anatom_j$ will be contracted in $\persistsimp(\Gg',\anatom_i)$. 
+
+Let $\Gg''$ be the graph obtained from $\Gg'$ by contracting all the atoms that are contractable with respect to $a_i$. We claim that there are no predicate atoms $\anatom_j$ such that $\Ee_{\Gg''}(\anatom_j) \neq \emptyset$  and $\Ee^{atm}_{\Gg''-a_j}([E]) \cup \Ee^{atm}_{\Gg''-\anatom_j}([F])$ is persistent with respect to $\anatom_i$,  where  $[E]$ and $[F]$ are the source nodes of the two arcs in $\Ee_{\Gg''}(\anatom_j)$.  To the contrary, suppose that such an atom $\anatom_j$ exists. Let $e_1,e_2$ be the two arcs associated with $\anatom_j$ in $\Gg''$, out of $[E]$ and $[F]$ respectively. Since $\Gg'$ is persistence-irredundant, we can infer that $\Gg''$ is persistence-irredundant as well. From the fact that $\Ee^{atm}_{\Gg''-a_j}([E]) \cup \Ee^{atm}_{\Gg''-\anatom_j}([F])$ is persistent with respect to $\anatom_i$,  we deduce that an arc associated with $\anatom_i$, say $e'$, is reachable from $[E]$ or $[F]$ in $\Gg''-\anatom_j$. Without loss of generality, suppose that $e'$ is reachable from $[E]$ in $\Gg''-\anatom_j$. Let $\pi=e_1$. Then $[E]$ is an ancestor of the source node of $e'$, the last arc of $\pi$ is an an arc associated with $\anatom_j$, and the source node of $e'$ is reachable from $[E]$ in $\Gg'-\{\atom(e'') \mid e'' \in \pi\}$. Therefore, we deduce that $\anatom_j$ is contractable with respect to $\anatom_i$, a contradiction to the fact that all such atoms have been contracted in $\Gg''$.
+
+Therefore, we conclude that $\Gg''=\persistsimp(\Gg'', \anatom_i)=\persistsimp(\Gg', \anatom_i)$.
+\qed
+\end{proof}
+
 \noindent
-{\bf Procedure} ${\sf Simp}(\Gg)$.\\
-Let $\Gg':=\Gg$. Repeat the following procedure until no more reductions can be done.
+{\bf Procedure} ${\sf Simp}(\Gg')$.\\
+Input: A graph $\Gg'$.\\
+%
+Repeat the following procedure until no more reductions can be done.
 \begin{enumerate}
 \item If $\locinconsist(\Gg') = true$, then return $\bot$.
 %
@@ -649,9 +700,12 @@ Let $\Gg':=\Gg$. Repeat the following procedure until no more reductions can be 
 %
 \item If there is a pair of distinct nodes $[E']$ and $[F']$ such that 
 \begin{itemize}
-\item $\Ee_{\Gg'}([E']) \cap \Ee_{\Gg'}([F']) \neq \emptyset$, 
-\item all the arcs from $ \Ee_{\Gg'}([E']) \cup \Ee_{\Gg'}([F'])$  are predicate-labeled, 
-\item and for each $e \in \Ee_{\Gg'}([E']) \cup \Ee_{\Gg'}([F'])$ such that $\persistsimp(\Gg', \atom(e)) \neq \bot$,  it holds that $[E']_e =[F']_e$, where $[E']_e$ and $[F']_e$ are the nodes of  $\persistsimp(\Gg', \atom(e))$ containing $E'$ and $F'$ respectively, 
+%\item $\Ee_{\Gg'}([E']) \cap \Ee_{\Gg'}([F']) \neq \emptyset$, 
+\item $[E']$ and $[F']$ belong to the same connected component of $\Gg'$,
+%
+\item  each arc $e \not \in \Ee_{\Gg'}([E']) \cap \Ee_{\Gg'}([F'])$ is predicate-labeled,
+%
+\item and for each arc $e \not \in \Ee_{\Gg'}([E']) \cap \Ee_{\Gg'}([F'])$ such that $\persistsimp(\Gg', \atom(e)) \neq \bot$,  it holds that $[E']_e =[F']_e$, where $[E']_e$ and $[F']_e$ are the nodes of  $\persistsimp(\Gg', \atom(e))$ containing $E'$ and $F'$ respectively, 
 \end{itemize}
 then merge $[E']$ and $[F']$. 
 %
@@ -663,6 +717,22 @@ Return $\Gg'$.
 %Note that the above procedure is nondeterministic since there may be multiple pairs of nodes $[E'],[F']$ satisfying the conditions in item 3.
 %Let $\Gg'$ be an graph obtained after executing the above procedure on $\Gg$.
 
+
+\begin{example}
+Suppose $\varphi_1,\varphi_2,\varphi_3,\varphi_4$ are the SLID[$\dllseg$] formulae illustrated in Fig.~\ref{fig-dllseg-eq}(a)-(d), where all the atoms are predicate atoms. We claim that for each $j: 1 \le j \le 4$, $\varphi_j \models E_1 = E_2 \wedge \ltrue$. 
+\begin{itemize}
+\item For $\varphi_1$,  $\persistsimp(\Gg'_1, \anatom_1)$ (resp. $\persistsimp(\Gg'_1, \anatom_2)$) is obtained from $\Gg'_1$ by contracting $\anatom_2$ (resp. $\anatom_1$), then $E_1 =E_2 =E_3$   in  $\persistsimp(\Gg'_1, \anatom_1)$ and $E_1= E_2= E_4$ in $\persistsimp(\Gg'_1, \anatom_2)$. Therefore, $\varphi_1 \models E_1 = E_2 \wedge \ltrue$.
+%
+\item  For $\varphi_2$,  $\persistsimp(\Gg'_2, \anatom_1)$ (resp. $\persistsimp(\Gg'_2, \anatom_2)$) is obtained from $\Gg'_2$ by contracting $\anatom_2$ and $\anatom_3$ (resp. $\anatom_1$ and $\anatom_3$), then $E_1 = E_4 = E_3 = E_2$ in  $\persistsimp(\Gg'_2, \anatom_1)$ and $\persistsimp(\Gg'_2, \anatom_2)$. Therefore, $\varphi_2 \models E_1 = E_2 \wedge \ltrue$.
+%
+\item  For $\varphi_3$,  $\persistsimp(\Gg'_3, \anatom_1)$ (resp. $\persistsimp(\Gg'_3, \anatom_2)$, $\persistsimp(\Gg'_3, \anatom_3)$) is obtained from $\Gg'_3$ by contracting $\anatom_2$ and $\anatom_3$ (resp. $\anatom_1$ and $\anatom_3$, $\anatom_1$ and $\anatom_2$), then $E_1 = E_4 = E_2$ in  $\persistsimp(\Gg'_3, \anatom_1)$, $E_1=E_5 = E_2$ in $\persistsimp(\Gg'_3, \anatom_2)$, and $E_1=E_3 = E_2$ in $\persistsimp(\Gg'_3, \anatom_3)$. In addition, $\persistsimp(\Gg'_3, \anatom_4)$ is obtained from $\Gg'_3$ by  contracting $\anatom_1,\anatom_2,\anatom_3$. So $E_1 = E_3 = E_4 = E_5 = E_2$ in $\persistsimp(\Gg'_3, \anatom_4)$.  Therefore, $\varphi_3 \models E_1 = E_2 \wedge \ltrue$.
+%
+\item  For $\varphi_4$,  both $\persistsimp(\Gg'_4, \anatom_1)$ and $\persistsimp(\Gg'_4, \anatom_2)$ are obtained from $\Gg'_4$ by contracting $a_3$ and $a_4$, then $E_1 = E_5 = E_2$ in  $\persistsimp(\Gg'_4, \anatom_1)$ and $\persistsimp(\Gg'_4, \anatom_2)$. In addition, both $\persistsimp(\Gg'_4, \anatom_3)$ and $\persistsimp(\Gg'_4, \anatom_4)$ are obtained from $\Gg'_4$ by  contracting $\anatom_1,\anatom_2$. So $E_1 = E_3 = E_4 = E_2$ in $\persistsimp(\Gg'_4, \anatom_3)$ and $\persistsimp(\Gg'_4, \anatom_4)$.  Therefore, $\varphi_4 \models E_1 = E_2 \wedge \ltrue$.
+%
+\item  For $\varphi_5$,  $\persistsimp(\Gg'_5, \anatom_1)$ is obtained from $\Gg'_5$ by contracting $a_2, a_3, a_4$, so $E_3 = E_2 = E_4=E_1$ in  $\persistsimp(\Gg'_5, \anatom_1)$, $\persistsimp(\Gg'_5, \anatom_2)$ is obtained from $\Gg'_5$ by contracting $a_1, a_3, a_4$, so $E_3 = E_1 = E_4=E_2$  in  $\persistsimp(\Gg'_5, \anatom_2)$, $\persistsimp(\Gg'_5, \anatom_3)$ is obtained from $\Gg'_5$ by contracting $a_1, a_2, a_4$, so $E_3= E_1 = E_2$, $\persistsimp(\Gg'_5, \anatom_4)$ is obtained from $\Gg'_5$ by contracting $a_1, a_2, a_3, a_5$, so $E_3=E_1 = E_2$. Therefore, $\varphi_4 \models E_1 = E_2 \wedge \ltrue$.
+\end{itemize}
+\end{example}
+
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale=0.8]{dllseg-equality.pdf}
@@ -672,21 +742,6 @@ Return $\Gg'$.
 \label{fig-dllseg-eq}
 \vspace{-6mm}
 \end{figure}
-
-
-
-\begin{example}
-Suppose $\varphi_1,\varphi_2,\varphi_3,\varphi_4$ are the SLID[$\dllseg$] formulae illustrated in Fig.~\ref{fig-dllseg-eq}(a)-(d), where all the atoms are predicate atoms. We claim that for each $j: 1 \le j \le 4$, $\varphi_j \models E_1 = E_2 \wedge \ltrue$. 
-\begin{itemize}
-\item For $\varphi_1$,  $\persistsimp(\Gg'_1, a_1)$ (resp. $\persistsimp(\Gg'_1, a_2)$) is obtained from $\Gg'_1$ by contracting $a_2$ (resp. $a_1$), then $E_1 =E_2 =E_3$   in  $\persistsimp(\Gg'_1, a_1)$ and $E_1= E_2= E_4$ in $\persistsimp(\Gg'_1,a_2)$. Therefore, $\varphi_1 \models E_1 = E_2 \wedge \ltrue$.
-%
-\item  For $\varphi_2$,  $\persistsimp(\Gg'_2, a_1)$ (resp. $\persistsimp(\Gg'_2, a_2)$) is obtained from $\Gg'_2$ by contracting $a_2$ and $a_3$ (resp. $a_1$ and $a_3$), then $E_1 = E_4 = E_3 = E_2$ in  $\persistsimp(\Gg'_2, a_1)$ and $\persistsimp(\Gg'_2,a_2)$. Therefore, $\varphi_2 \models E_1 = E_2 \wedge \ltrue$.
-%
-\item  For $\varphi_3$,  $\persistsimp(\Gg'_3, a_1)$ (resp. $\persistsimp(\Gg'_3, a_2)$, $\persistsimp(\Gg'_3, a_3)$) is obtained from $\Gg'_3$ by contracting $a_2$ and $a_3$ (resp. $a_1$ and $a_3$, $a_1$ and $a_2$), then $E_1 = E_4 = E_2$ in  $\persistsimp(\Gg'_3, a_1)$, $E_1=E_5 = E_2$ in $\persistsimp(\Gg'_3,a_2)$, and $E_1=E_3 = E_2$ in $\persistsimp(\Gg'_3,a_3)$. In addition, $\persistsimp(\Gg'_3, a_4)$ is obtained from $\Gg'_3$ by  contracting $a_1,a_2,a_3$. So $E_1 = E_3 = E_4 = E_5 = E_2$ in $\persistsimp(\Gg'_3, a_4)$.  Therefore, $\varphi_3 \models E_1 = E_2 \wedge \ltrue$.
-%
-\item  For $\varphi_4$,  both $\persistsimp(\Gg'_4, a_1)$ and $\persistsimp(\Gg'_3, a_2)$ are obtained from $\Gg'_4$ by contracting $a_3$ and $a_4$, then $E_1 = E_5 = E_2$ in  $\persistsimp(\Gg'_4, a_1)$ and $\persistsimp(\Gg'_4, a_2)$. In addition, both $\persistsimp(\Gg'_4, a_3)$ and $\persistsimp(\Gg'_4, a_4)$ are obtained from $\Gg'_4$ by  contracting $a_1,a_2$. So $E_1 = E_3 = E_4 = E_2$ in $\persistsimp(\Gg'_4, a_3)$ and $\persistsimp(\Gg'_4, a_4)$.  Therefore, $\varphi_4 \models E_1 = E_2 \wedge \ltrue$.
-\end{itemize}
-\end{example}
 
 
 \medskip
@@ -707,30 +762,41 @@ Suppose $\simp(\Gg) \neq \bot$. Our goal is to construct a model of $\varphi$.
 
 Initially, let $\Gg':=\simp(\Gg)$. Repeat the following procedure until there are no predicate-labeled arcs in $\Gg'$. 
 \begin{enumerate}
-\item Select a predicate atom $\anatom$ such that the two arcs of $\Gg'$ associated with $\anatom$ are the forward arc $e_1$ and the backward arc $e_2$, whose source and destination nodes are $E'_1, F'_1$ and $E'_2, F'_2$ respectively. 
+\item Select a predicate atom $\anatom$ such that the two arcs of $\Gg'$ associated with $\anatom$ are the forward arc $e_1$ and the backward arc $e_2$, whose source and destination nodes are $E'_1, F'_1$ and $E'_2, F'_2$ respectively. Let $\Gg':=\persistsimp(\Gg',\anatom)$.
 
+\item If $\Gg' \neq \bot$, then modify $\Gg'$ by applying the following replacements. 
 \begin{itemize}
 \item If $[E'_1] = [E'_2]$, then relabel $e_1,e_2$ with $\fnext$ and $\fprev$ respectively. 
 \item Otherwise, replace $e_1$ with $[E'_1] \aedge{\fnext} [E'_2] \aedge{\fnext} [F'_1]$ and $e_2$ with $[E'_2] \aedge{\fprev} [E'_1] \aedge{\fprev} [F'_2]$ respectively.
 \end{itemize}
-
-\item Let $\Gg':=\persistsimp(\Gg')$.
+%
+%\item Let $\Gg':=\persistsimp(\Gg')$.
 \end{enumerate}
 
-To guarantee that the above procedure indeed constructs a model of $\varphi$ in the end, it is necessary to show that $\persistsimp(\Gg') \neq \bot$ in the second step.
+To guarantee that the above procedure indeed constructs a model of $\varphi$ in the end, it is necessary to show that the condition $\Gg' \neq \bot$ always holds in the second step.
 
-To the contrary, suppose that during some execution of the loop, it happens that $\Gg' \neq \bot$ but $\persistsimp(\Gg') = \bot$, where $\Gg'$ is the graph before executing the second step. From the description of $\persistsimp(\cdot)$, we know that this can only happen if  one of the following holds,
+We first observe that the graph $\Gg'$ before the execution of the first step of the above procedure is persistence-irredundant.
+
+To the contrary, suppose that during some execution of the loop, it happens that $\Gg' \neq \bot$ but $\persistsimp(\Gg', \anatom) = \bot$, where $\Gg'$ is the graph before executing the first step. From the description of $\persistsimp(\cdot,\cdot)$, we know that this can only happen if  one of the following situation holds,
 \begin{itemize}
-\item there are two nodes  $[E']$ and $[F']$ of $\Gg'$ such that $E',F'$ belong to the same node in $\persistsimp(\Gg')$, and there is an undirected arc between $[E']$ and $[F']$ in $\Gg'$,
+\item there are two distinct nodes  $[E']$ and $[F']$ of $\Gg'$ such that $E',F'$ belong to the same node in $\persistsimp(\Gg', \anatom)$, and there is an undirected arc between $[E']$ and $[F']$ in $\Gg'$,
 
-\item in $\persistsimp(\Gg')$, there are a node $[E']$ and two arcs out of $[E']$ labeled by $\fnext$.
+\item in $\persistsimp(\Gg', \anatom)$, there are a node $[E]$ and two arcs out of $[E]$ such that the two arcs are associated with two different atoms and each of them is either an arc associated with $\anatom$ or a field-labeled arc.
 \end{itemize}
 
-\zhilin{Just a try. The arguments in the following two paragraphs are still quite imprecise.}
+For the former situation, from Proposition~\ref{prop-simp-atom}, we deduce that there are an ancestor of $[E'_1]$ or $[E'_2]$, say $[E'_0]$, and two (possibly empty) paths $\pi_1, \pi_2$ from $[E'_0]$ to $[E']$ and $[F']$ respectively,  such that $[E'_1]$ or $[E'_2]$ is reachable from $[E'_0]$ in both $\Gg'-\{\atom(e'') \mid e'' \in \pi_1\}$ and $\Gg'-\{\atom(e'') \mid e'' \in \pi_2\}$. From this, we claim that $[E'_1]$ or $[E'_2]$ is reachable from $[E'_0]$ in $\Gg'-\{\atom(e'') \mid e'' \in \pi_1 \cup \pi_2\}$. Because otherwise, 
 
-For the former situation, there must be an ancestor of $[E'_1]$ or $[E'_2]$, say $[E'_0]$, such that $[E']$ and $[F']$ are reachable from $[E'_0]$ in $\Gg'$. This would imply that there is an arc $e_0$ from $[E'_0]$ to $[F'_0]$ such that $[F'_0]$ is an ancestor of $[E'_1]$ or $[E'_2]$, and $\Ee_{\Gg'-\atom(e_0)}([E'_0])$ is persistent. Therefore, $e_0$ can be contracted in $\Gg'$, which contradicts the fact that no contractions of arcs are possible in $\Gg'$.
+%Since $[E']$ and $[F']$ are two distinct nodes in $\Gg'$, we know that at least one of $\pi_1$ and $\pi_2$ is nonempty. 
+Then there is an arc $e'_1$ from $[E'_0]$ to some node $[F''_1]$  in  $\Gg'-\{\atom(e'') \mid e'' \in \pi_1 \cup \pi_2\}$ such that $[E'_1]$ or $[E'_2]$ is reachable from $[F''_1]$ in $\Gg'-\{\atom(e'') \mid e'' \in \pi_1 \cup \pi_2\}$. 
 
-For the latter situation, let $e_1,e_2$ be two arcs of $\Gg'$ corresponding to the $\fnext$-labeled arcs out of $[E']$, then there must be a node $[E'_0]$ such that both $e_1$ and $e_2$ are reachable from $[E'_0]$ in $\Gg'$ and $E'_0, E'$ belong to the same node in $\persistsimp(\Gg')$. This would imply that there is an arc $e_0$ from $[E'_0]$ to $[F'_0]$ such that $[F'_0]$ is an ancestor of $[E'_1]$ or $[E'_2]$, and $\Ee_{\Gg'-\atom(e_0)}([E'_0])$ is persistent. Therefore, $e_0$ can be contracted in $\Gg'$, which contradicts the fact that no contractions of arcs are possible in $\Gg'$.
+This implies that $\Ee_{\Gg' - \atom(e'_1)}([E'_0])$ is persistent and $e'_1$ can be contracted in $\Gg'$,  which contradicts to the fact that $\Gg'$ is persistence-irredundant.
+
+\zhilin{The arguments for the former situation should be cleaned}
+
+For the latter situation, we exemplify the arguments for the case that in $\persistsimp(\Gg', \anatom)$, there are two field-labeled arcs out of $[E]$ and the two arcs belong to two different atoms. From Proposition~\ref{prop-simp-atom}, we deduce that there are two field-labeled arcs in $\Gg'$, whose source and destination nodes are $[E''_1], [F''_1]$ and $[E''_2], [F''_2]$ respectively, an ancestor of $[E'_1]$ or $[E'_2]$, say $[E'_0]$, and two (possibly empty) paths $\pi_1, \pi_2$ from $[E'_0]$ to $[E''_1]$ and $[E''_2]$ respectively,  such that $[E'_1]$ or $[E'_2]$ is reachable from $[E'_0]$ in both $\Gg'-\{\atom(e'') \mid e'' \in \pi_1\}$ and $\Gg'-\{\atom(e'') \mid e'' \in \pi_2\}$. 
+Since $\Gg'$ is persistence-irredundant, we know that $\pi_1$ or $\pi_2$ is nonempty. 
+Without loss of generality, suppose that $\pi_1$ is nonempty. 
+Then there is an arc $e'_1$ from $[E'_0]$ to some node $[F'''_1]$  in  $\Gg'-\{\atom(e'') \mid e'' \in \pi_1\}$ such that $[E'_1]$ or $[E'_2]$ is reachable from $[F'''_1]$ in $\Gg'-\{\atom(e'') \mid e'' \in \pi_1\}$. This implies that $\Ee_{\Gg' - \atom(e'_1)}([E'_0])$ is persistent and $e'_1$ can be contracted in $\Gg'$,  which contradicts to the fact that $\Gg'$ is persistence-irredundant.
 \qed
 \end{proof}
 
